@@ -1,0 +1,12 @@
+name: Cordial
+
+options:
+  bundleIdPrefix: dev.louis1001
+targets:
+  Cordial:
+    type: tool
+    platform: macOS
+    sources: [Cordial]
+    settings:
+      base:
+        CLANG_CXX_LANGUAGE_STANDARD: c++20
