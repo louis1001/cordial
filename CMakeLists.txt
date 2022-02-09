@@ -9,13 +9,14 @@ else()
     string(REGEX REPLACE "/W[3|4]" "/W4" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -WX")
 endif()
-include_directories(cordial/language/includes)
+include_directories(cordial/language/includes cordial/external/include)
 
 add_executable(cordial
         cordial/main.cpp
         cordial/language/src/lexer.cpp
         cordial/language/src/parser.cpp
-        cordial/language/src/token.cpp)
+        cordial/language/src/token.cpp
+        cordial/language/src/ast_dump.cpp)
 
 target_compile_definitions(cordial PUBLIC LANG_USE_ES=0)
 
