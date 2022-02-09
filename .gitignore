@@ -12,3 +12,7 @@ xcuserdata/
 
 build/
 
+# CMake Files
+cmake-*/
+
+.idea/
