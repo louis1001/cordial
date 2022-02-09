@@ -14,6 +14,7 @@ include_directories(cordial/language/includes)
 add_executable(cordial
         cordial/main.cpp
         cordial/language/src/lexer.cpp
+        cordial/language/src/parser.cpp
         cordial/language/src/token.cpp)
 
 target_compile_definitions(cordial PUBLIC LANG_USE_ES=0)

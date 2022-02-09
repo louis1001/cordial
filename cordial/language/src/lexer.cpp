@@ -11,7 +11,7 @@
 
 namespace Cordial {
 
-void Lexer::setup(std::string code_, std::string file_) {
+void Lexer::setup(const std::string &code_, const std::string &file_) {
     code = code_;
     file = file_;
     position = 0;
@@ -20,7 +20,7 @@ void Lexer::setup(std::string code_, std::string file_) {
     found_end = false;
 }
 
-char Lexer::current_char() { 
+char Lexer::current_char() {
     if (position >= code.size()) {
         return '\0';
     }
@@ -29,21 +29,20 @@ char Lexer::current_char() {
 }
 
 void Lexer::get_to_start() {
-    std::regex hola_regex("((^\\s*)|(\\n[\\s\\n]*))hola");
+    std::regex hola_regex(R"(((^\s*)|(\n[\s\n]*))hola)");
     std::smatch m;
     std::regex_search(code, m, hola_regex);
-    
+
     if (m.empty()) {
         std::cerr << "No se encontró el inicio del programa: `hola`" << std::endl;
         exit(1);
     }
 
-    auto position = m.position(0);
+    auto current_position = m.position(0);
     auto length = m.length(0);
-    auto new_pos = position + length - 4;
-
+    auto new_pos = current_position + length - 4;
     advance(new_pos);
-    
+
     is_at_start = true;
 }
 
@@ -56,21 +55,19 @@ char Lexer::advance() {
             debugPos.bump_col();
         }
         position++;
-        
+
         return current;
     }
-    
+
     return '\0';
 }
 
 std::string_view Lexer::advance(size_t by) {
-    size_t max_offset = static_cast<size_t>(
-                          std::min(code.size()-1, position + by)
-                      );
+    auto max_offset = std::min(code.size()-1, position + by);
 
     auto actual_change = max_offset - position;
     auto taken = std::string_view(code).substr(position, actual_change);
-    
+
     // do the actual advancing
     position += actual_change;
 
@@ -86,11 +83,11 @@ std::string_view Lexer::advance(size_t by) {
     }
     debugPos.bump_line(lines);
     debugPos.bump_col(cols);
-    
+
     return taken;
 }
 
-Token Lexer::token(Token::Type type, std::string lexeme, std::optional<DebugPosition> pos) {
+Token Lexer::token(Token::Type type, const std::string &lexeme, std::optional<DebugPosition> pos) {
     return {type, lexeme, pos.value_or(debugPos), file};
 }
 
@@ -107,19 +104,19 @@ Token Lexer::texto() {
         }
     }
     if (current_char() != '"') {
-        std::cerr << "Falta doble comilla `\"` para finalizar texto.\n";
+        std::cerr << "Falta doble comillas `\"` para finalizar texto.\n";
         throw;
     }
-    
+
     advance();
-    
+
     if (error_en_multilinea && es_multilinea) {
-        std::cerr << "Texto multilinea debe empezar con un salto de linea luego de la doble comilla.\n";
+        std::cerr << "Texto multilinea debe empezar con un salto de linea luego de las doble comillas.\n";
         throw;
     }
-    
+
     avoid_alphanum("un texto");
-    
+
     return token(Token::Type::texto, result.str());
 }
 
@@ -129,28 +126,28 @@ Token Lexer::numero() {
     while (is_valid() && is_num()) {
         result << advance();
     }
-    
+
     avoid_alphanum("un texto");
-    
+
     return token(Token::Type::numero, result.str());
 }
 
 Token Lexer::palabra() {
     std::stringstream result;
-    auto position = debugPos;
+    auto pos = debugPos;
     result << advance();
-    
+
     while (is_valid() &&
            (isdigit(current_char()) ||
             isalpha(current_char()) ||
             current_char() == '_')) {
         result << advance();
     }
-    
+
     auto valor = result.str();
     avoid_alphanum("la palabra `" + valor + "`");
-    
-    auto builtin = token_para_palabra(valor);
+
+    auto builtin = token_para_palabra(valor, pos);
     if (builtin.has_value()) {
         auto value = builtin.value();
         if (value.type == Token::Type::adios) {
@@ -159,7 +156,10 @@ Token Lexer::palabra() {
         }
         return builtin.value();
     } else {
-        return token(Token::Type::variable, valor, position);
+        // TODO: Enable variables
+        //return token(Token::Type::variable, valor, position);
+        std::cerr << "Palabra desconocida: `" << valor << "`.\n";
+        throw;
     }
 }
 
@@ -183,7 +183,7 @@ bool Lexer::ignore_whitespace() {
         advance();
         did_anything = true;
     }
-    
+
     return did_anything;
 }
 
@@ -195,9 +195,9 @@ std::optional<Token> Lexer::get_next() {
         advance(4);
         return tk;
     }
-    
+
     ignore_whitespace();
-    
+
     if (is_num()) {
         return numero();
     } if (is_identifier_char()) {
@@ -218,21 +218,21 @@ std::optional<Token> Lexer::get_next() {
                 return texto();
         }
     }
-    
+
     // TODO: enable exception when no token matches
     //throw;
-    
+
     return {};
 }
 
-std::optional<Token> Lexer::token_para_palabra(std::string name) {
+std::optional<Token> Lexer::token_para_palabra(const std::string &name, DebugPosition pos) {
     for(uint8_t i = 0; i < Token::Type::COUNT; i++) {
         Token::Type type = static_cast<Token::Type::Value>(i);
         // For every token type
         // Find one with matching name.
-        if (type.name() == name) { return token(type, name); }
+        if (type.name() == name) { return token(type, name, pos); }
     }
-    
+
     return {};
 }
 
