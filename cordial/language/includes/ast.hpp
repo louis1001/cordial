@@ -26,7 +26,7 @@ using nodo_ptr = std::shared_ptr<Nodo>;
 
 struct NodoPrograma {
     std::vector<nodo_ptr> hijos;
-    
+
     explicit NodoPrograma(std::vector<nodo_ptr> hijos_):
         hijos(hijos_)
     {}
@@ -48,13 +48,37 @@ struct NodoNumero {
     std::string contenido;
 };
 
+struct NodoSuma {
+    nodo_ptr lhs;
+    nodo_ptr rhs;
+};
+
+struct NodoResta {
+    nodo_ptr lhs;
+    nodo_ptr rhs;
+};
+
+struct NodoMulti {
+    nodo_ptr lhs;
+    nodo_ptr rhs;
+};
+
+struct NodoDivi {
+    nodo_ptr lhs;
+    nodo_ptr rhs;
+};
+
 // Make more clear with macros?
 using contenido_nodo = std::variant<
     NodoPrograma,
     NodoBloque,
     NodoMuestra,
     NodoTexto,
-    NodoNumero
+    NodoNumero,
+    NodoSuma,
+    NodoResta,
+    NodoMulti,
+    NodoDivi
 >;
 
 struct Nodo {

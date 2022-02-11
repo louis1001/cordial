@@ -66,7 +66,7 @@ bool Parser::is_of_type(Token::Type type) {
     return current_token->type == type;
 }
 
-bool Parser::is_of_type(std::vector<Token::Type> types) {
+bool Parser::is_of_type(const std::vector<Token::Type>& types) {
     if (!current_token.has_value() || types.empty()) { return false; }
 
     for (auto typeA : types) {
@@ -78,14 +78,16 @@ bool Parser::is_of_type(std::vector<Token::Type> types) {
 
 void Parser::eat(Token::Type type) {
     if (!current_token.has_value()) {
-        std::cout << "Error de sintaxis. Esperaba token de tipo `" << type.name() << "`, pero se encontró el fin del archivo.\n";
+        std::cout << "Error de sintaxis. Esperaba token de tipo `" << type.name()
+                  << "`, pero se encontró el fin del archivo.\n";
         throw;
     }
 
     if (type == current_token->type) {
         current_token = lexer.get_next();
     } else {
-        std::cout << "Token inesperado. Encontró `" << current_token->type.name() << "` cuando esperaba `" << type.name() << "`.\n";
+        std::cout << "Token inesperado. Encontró `" << current_token->type.name()
+                  << "` cuando esperaba `" << type.name() << "`.\n";
         throw;
     }
 }
@@ -93,9 +95,7 @@ void Parser::eat(Token::Type type) {
 void Parser::eat(std::vector<Token::Type> types) {
     std::stringstream names;
     auto end_of_file = !current_token.has_value();
-    for (auto it = types.begin();
-         it < types.end();
-         it++) {
+    for (auto it = types.begin(); it < types.end(); it++) {
 
         if (!end_of_file && *it == current_token->type) {
             current_token = lexer.get_next();
@@ -171,8 +171,70 @@ nodo_ptr Parser::muestra() {
 }
 
 nodo_ptr Parser::expresion() {
+    std::vector<Token::Type> expr_op {
+        Token::Type::mas,
+        Token::Type::menos
+    };
+    return nodo([&]() {
+        auto current = termino();
+        while (is_of_type(expr_op)) {
+            auto type = current_token->type;
+            eat(type);
+
+            auto pos = lexer.debug_position();
+            auto file = lexer.file_name();
+            if (type == Token::Type::mas) {
+                current = std::make_shared<Nodo>(
+                        NodoMeta{pos, file},
+                        NodoSuma{current, termino() }
+                        );
+            } else {
+                // Menos node
+                current = std::make_shared<Nodo>(
+                        NodoMeta{pos, file},
+                        NodoResta{current, termino() }
+                        );
+            }
+        }
+
+        return current->nodo;
+    });
+}
+
+nodo_ptr Parser::termino() {
+    std::vector<Token::Type> term_op {
+            Token::Type::por,
+            Token::Type::entre
+    };
+    return nodo([&]() {
+        auto current = literal();
+        while (is_of_type(term_op)) {
+            auto type = current_token->type;
+            eat(type);
+
+            auto pos = lexer.debug_position();
+            auto file = lexer.file_name();
+            if (type == Token::Type::por) {
+                current = std::make_shared<Nodo>(
+                        NodoMeta{pos, file},
+                        NodoMulti{current, literal() }
+                        );
+            } else {
+                // Menos node
+                current = std::make_shared<Nodo>(
+                        NodoMeta{pos, file},
+                        NodoDivi{current, termino() }
+                        );
+            }
+        }
+
+        return current->nodo;
+    });
+}
+
+nodo_ptr Parser::literal() {
     if (!current_token.has_value()) {
-        std::cerr << "Esperaba una expresión, pero se llegó al final del archivo.";
+        std::cerr << "Esperaba un literal, pero se llegó al final del archivo.";
     }
 
     if (is_of_type(Token::Type::texto)) {
@@ -187,7 +249,7 @@ nodo_ptr Parser::expresion() {
         });
     }
 
-    std::cerr << "Esperaba una expresión, pero encontró un token de tipo: `" << current_token->type.name() << "`\n";
+    std::cerr << "Esperaba una literal, pero encontró un token de tipo: `" << current_token->type.name() << "`\n";
     throw;
 }
 

@@ -18,7 +18,7 @@ namespace Cordial {
 
 struct Lexer {
 private:
-    size_t position;
+    size_t position{};
     DebugPosition debugPos;
     std::string code;
     std::string file;
@@ -42,7 +42,7 @@ private:
     inline bool is_alpha() { return std::isalpha(current_char(), spanish_locale); }
     inline bool is_num() { return std::isdigit(current_char(), spanish_locale); }
     inline bool is_space() { return std::isspace(current_char(), spanish_locale); }
-    inline bool is_alphanum() { return is_alpha() || is_num(); }
+    [[maybe_unused]] inline bool is_alphanum() { return is_alpha() || is_num(); }
     inline bool is_identifier_char() { return is_alpha() || current_char() == '_'; }
 
     void avoid_alphanum(std::string_view para);
@@ -51,10 +51,10 @@ private:
     void get_to_start();
 
 public:
-    DebugPosition debug_position() const { return debugPos; }
-    std::string file_name() const { return file; }
+    [[nodiscard]] DebugPosition debug_position() const { return debugPos; }
+    [[nodiscard]] std::string file_name() const { return file; }
 
-    Lexer() {}
+    Lexer() = default;
     void setup(const std::string &code_, const std::string &file_);
     std::optional<Token> get_next();
 };

@@ -16,7 +16,9 @@ add_executable(cordial
         cordial/language/src/lexer.cpp
         cordial/language/src/parser.cpp
         cordial/language/src/token.cpp
-        cordial/language/src/ast_dump.cpp)
+        cordial/language/src/ast_dump.cpp
+        cordial/language/src/semantics.cpp
+        cordial/language/src/symbol.cpp)
 
 target_compile_definitions(cordial PUBLIC LANG_USE_ES=0)
 

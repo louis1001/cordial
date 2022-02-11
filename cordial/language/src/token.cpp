@@ -34,7 +34,16 @@ std::string_view Token::Type::name() const {
             return "variable";
         case Type::muestra:
             return "muestra";
-            
+
+        case mas:
+            return "mas";
+        case menos:
+            return "menos";
+        case entre:
+            return "entre";
+        case por:
+            return "por";
+
         case Type::COUNT:
             return "OPEIUWGB {UHW4B9   AWEG";
     }

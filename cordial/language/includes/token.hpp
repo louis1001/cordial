@@ -21,22 +21,28 @@ struct Token {
         enum Value: uint8_t {
             hola = 0,
             adios,
-            
+
             porfavor,
             gracias,
-            
+
             muestra,
+
             punto,
             coma,
             y,
-            
+
             numero,
             texto,
             variable,
-            
+
+            mas,
+            menos,
+            entre,
+            por,
+
             COUNT
         };
-        
+
         Type() = default;
         constexpr Type(Value aType) : value(aType) { }
 
@@ -50,33 +56,33 @@ struct Token {
           constexpr bool operator==(Type a) const { return value == a.value; }
           constexpr bool operator!=(Type a) const { return value != a.value; }
         #endif
-        
+
         std::string_view name() const;
 
         private:
           Value value;
     };
-    
+
     Type type;
     std::string lexeme;
     DebugPosition position;
     std::string file;
-    
+
     ~Token() = default;
-    
+
     std::string get_str() const {
         std::stringstream result;
-        
+
         result << "Token{ ";
-        
+
         result << "." << type.name() << ", ";
         result << "'" << lexeme << "', ";
-        
+
         result << "en: (lin: " << position.line << ", ";
         result <<      "col: " << position.col  << ") ";
-        
+
         result << "}";
-        
+
         return result.str();
     }
 };

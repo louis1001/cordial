@@ -25,19 +25,21 @@ private:
     nodo_ptr statement();
     nodo_ptr muestra();
     nodo_ptr expresion();
+    nodo_ptr termino();
+    nodo_ptr literal();
     std::vector<nodo_ptr> statement_list();
-    
+
     static std::vector<Token::Type> statement_types;
-    
+
     void statement_separator();
-    
+
     void eat(Token::Type type);
     void eat(std::vector<Token::Type> types);
     bool is_of_type(Token::Type type);
-    bool is_of_type(std::vector<Token::Type> types);
-    
+    bool is_of_type(const std::vector<Token::Type>& types);
+
     nodo_ptr nodo(std::function<contenido_nodo()> generator);
-    
+
     std::optional<Token> current_token;
     Lexer lexer;
 public:

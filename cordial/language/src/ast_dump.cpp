@@ -4,7 +4,6 @@
 
 #include "ast_dump.h"
 #include <sstream>
-#include <iostream>
 #include <variant>
 
 namespace Cordial {
@@ -22,8 +21,6 @@ namespace Cordial {
         return spaces.str();
     }
 
-    template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; }; // (1)
-    template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
     std::string ASTDumper::visit(const nodo_ptr &node, int counter) const {
         std::stringstream result;
 
@@ -58,6 +55,30 @@ namespace Cordial {
                },
                [&result, id](const NodoNumero& numero) {
                    result << id << "Numero(" << numero.contenido << ")";
+               },
+               [&result, id, counter, this](const NodoSuma& suma) {
+                   result << id << "Suma(\n";
+                   result << visit(suma.lhs, counter+1);
+                   result << visit(suma.rhs, counter+1);
+                   result << id << ")";
+               },
+               [&result, id, counter, this](const NodoResta& resta) {
+                   result << id << "Resta(\n";
+                   result << visit(resta.lhs, counter+1);
+                   result << visit(resta.rhs, counter+1);
+                   result << id << ")";
+               },
+               [&result, id, counter, this](const NodoMulti& multiplicacion) {
+                   result << id << "Multiplicación(\n";
+                   result << visit(multiplicacion.lhs, counter+1);
+                   result << visit(multiplicacion.rhs, counter+1);
+                   result << id << ")";
+               },
+               [&result, id, counter, this](const NodoDivi& division) {
+                   result << id << "División(\n";
+                   result << visit(division.lhs, counter+1);
+                   result << visit(division.rhs, counter+1);
+                   result << id << ")";
                }
            },
             node->nodo
