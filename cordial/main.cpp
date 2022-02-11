@@ -9,6 +9,7 @@
 #include <fstream>
 
 #include "parser.hpp"
+#include "semantics.hpp"
 #include "ast_dump.h"
 #include "argh.h"
 
@@ -53,6 +54,9 @@ int main(int argc, const char * argv[]) {
     auto tree = visitor.visit(result, 0);
 
     std::cout << tree;
+
+    Cordial::Semantics semAn;
+    (void)semAn.visit(result);
 
 //    Cordial::Lexer lx;
 //
