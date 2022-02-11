@@ -197,7 +197,7 @@ nodo_ptr Parser::expresion() {
             }
         }
 
-        return current->nodo;
+        return current->contenido;
     });
 }
 
@@ -228,7 +228,7 @@ nodo_ptr Parser::termino() {
             }
         }
 
-        return current->nodo;
+        return current->contenido;
     });
 }
 

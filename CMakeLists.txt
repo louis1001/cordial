@@ -18,7 +18,9 @@ add_executable(cordial
         cordial/language/src/token.cpp
         cordial/language/src/ast_dump.cpp
         cordial/language/src/semantics.cpp
-        cordial/language/src/symbol.cpp)
+        cordial/language/src/simbolo.cpp
+        cordial/language/src/interpreter.cpp
+        cordial/language/includes/valor.cpp)
 
 target_compile_definitions(cordial PUBLIC LANG_USE_ES=0)
 

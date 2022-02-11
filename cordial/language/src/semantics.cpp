@@ -5,8 +5,8 @@
 #include "semantics.hpp"
 
 namespace Cordial {
-    std::shared_ptr<Symbol> Semantics::visit(const nodo_ptr &node) const {
-        std::shared_ptr<Symbol> result;
+    std::shared_ptr<Simbolo> Semantics::visit(const nodo_ptr &node) const {
+        std::shared_ptr<Simbolo> result;
         std::visit(
             overloaded{
                [this](const NodoPrograma& programa) {
@@ -19,14 +19,12 @@ namespace Cordial {
                        visit(hijo);
                    }
                },
-               [this, &result](const NodoMuestra& muestra) {
+               [this](const NodoMuestra& muestra) {
                    auto ret_type = visit(muestra.expr);
 
                    // Only types printable for now
                    assert(ret_type != nullptr);
                    assert(ret_type == tipo_numero() || ret_type == tipo_texto());
-
-                   result = ret_type;
                },
                [&result](const NodoTexto& texto) {
                    result = tipo_texto();
@@ -63,7 +61,7 @@ namespace Cordial {
                    result = tipo_numero();
                }
            },
-           node->nodo
+           node->contenido
         );
 
         return result;

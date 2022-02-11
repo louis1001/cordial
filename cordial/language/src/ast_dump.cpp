@@ -81,7 +81,7 @@ namespace Cordial {
                    result << id << ")";
                }
            },
-            node->nodo
+            node->contenido
         );
 
         auto position = node->meta.position;

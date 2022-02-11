@@ -6,12 +6,12 @@
 #define CORDIAL_SEMANTICS_HPP
 #include "ast.hpp"
 #include "utils.hpp"
-#include "symbol.hpp"
+#include "simbolo.hpp"
 
 namespace Cordial {
     class Semantics {
     public:
-        std::shared_ptr<Symbol> visit(const nodo_ptr &node) const;
+        std::shared_ptr<Simbolo> visit(const nodo_ptr &node) const;
     };
 }
 

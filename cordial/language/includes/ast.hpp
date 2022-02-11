@@ -83,10 +83,10 @@ using contenido_nodo = std::variant<
 
 struct Nodo {
     NodoMeta meta;
-    contenido_nodo nodo;
+    contenido_nodo contenido;
     Nodo(NodoMeta meta_, contenido_nodo nodo_):
-        meta(meta_),
-        nodo(nodo_)
+            meta(meta_),
+            contenido(nodo_)
     {}
 };
 
