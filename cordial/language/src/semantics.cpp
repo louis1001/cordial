@@ -26,6 +26,7 @@ namespace Cordial {
                    assert(ret_type != nullptr);
                    assert(ret_type == tipo_numero() || ret_type == tipo_texto());
                },
+               [](const NodoBaja&) { /* This one just prints */},
                [&result](const NodoTexto& texto) {
                    result = tipo_texto();
                },

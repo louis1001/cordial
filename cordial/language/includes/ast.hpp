@@ -40,6 +40,8 @@ struct NodoMuestra {
     nodo_ptr expr;
 };
 
+struct NodoBaja {};
+
 struct NodoTexto {
     std::string contenido;
 };
@@ -73,6 +75,7 @@ using contenido_nodo = std::variant<
     NodoPrograma,
     NodoBloque,
     NodoMuestra,
+    NodoBaja,
     NodoTexto,
     NodoNumero,
     NodoSuma,

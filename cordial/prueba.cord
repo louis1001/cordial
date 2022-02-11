@@ -2,14 +2,8 @@ Esto no debe registrarse como un programa. Ni siquiera si escribo hola.
 La verdad, no se qué tan confuso pueda verse.
 
 Código empezaría aquí:
-hola y porfavor
-    muestra "Hola, mundo. "
-  y muestra 20 mas 2 menos 20.
-    porfavor
-        porfavor
-        muestra ", adios".
-        gracias.
-    gracias.
-gracias. adios.
+hola. porfavor muestra "Hola, mundo." y baja.
+muestra 20 mas 2. porfavor muestra ", adios" y baja. gracias.
+gracias, adios.
 
 Y esto estaría fuera de código. El programa termina luego del primer `adios`.

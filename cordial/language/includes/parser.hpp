@@ -24,6 +24,7 @@ private:
     nodo_ptr block();
     nodo_ptr statement();
     nodo_ptr muestra();
+    nodo_ptr baja();
     nodo_ptr expresion();
     nodo_ptr termino();
     nodo_ptr literal();

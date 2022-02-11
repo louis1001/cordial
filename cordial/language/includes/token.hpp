@@ -26,6 +26,7 @@ struct Token {
             gracias,
 
             muestra,
+            baja,
 
             punto,
             coma,

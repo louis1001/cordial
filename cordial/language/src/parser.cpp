@@ -47,7 +47,8 @@ void Parser::statement_separator() {
 
 std::vector<Token::Type> Parser::statement_types{
     Token::Type::muestra,
-    Token::Type::porfavor
+    Token::Type::porfavor,
+    Token::Type::baja
 };
 
 std::vector<nodo_ptr> Parser::statement_list() {
@@ -156,6 +157,8 @@ nodo_ptr Parser::statement() {
         return muestra();
     } else if (is_of_type(Token::Type::porfavor)) {
         return block();
+    } else if (is_of_type(Token::Type::baja)) {
+        return baja();
     }
 
     std::cerr << "Esperaba una oración, pero encontró un token de tipo: `" << current_token->type.name() << "`\n";
@@ -167,6 +170,13 @@ nodo_ptr Parser::muestra() {
         eat(Token::Type::muestra);
         auto expr = expresion();
         return NodoMuestra{expr};
+    });
+}
+
+nodo_ptr Parser::baja() {
+    return nodo([&]{
+        eat(Token::Type::baja);
+        return NodoBaja();
     });
 }
 

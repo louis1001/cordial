@@ -34,6 +34,8 @@ std::string_view Token::Type::name() const {
             return "variable";
         case Type::muestra:
             return "muestra";
+        case Type::baja:
+            return "baja";
 
         case mas:
             return "mas";

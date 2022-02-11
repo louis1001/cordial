@@ -50,6 +50,9 @@ namespace Cordial {
                    result << visit(muestra.expr, counter+1);
                    result << id << ")";
                },
+               [&result, id](const NodoBaja&) {
+                   result << id << "SaltoDeLinea ()";
+               },
                [&result, id](const NodoTexto& texto) {
                    result << id << "Texto(" << texto.contenido << ")";
                },

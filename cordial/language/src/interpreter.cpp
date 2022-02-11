@@ -30,6 +30,9 @@ namespace Cordial {
                         std::cout << text_value->valor;
                    }
                },
+               [](const NodoBaja& ) {
+                   std::cout << "\n";
+               },
                [&result](const NodoTexto& texto) {
                    result = std::make_shared<Valor>(tipo_texto(), ValorTexto{texto.contenido});
                },
