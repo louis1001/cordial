@@ -3,8 +3,8 @@ La verdad, no se qué tan confuso pueda verse.
 
 Código empezaría aquí:
 hola.
-    porfavor
-        muestra "Hola, mundo.",
+(comentario sin sentido) porfavor,
+        muestra "Hola, mundo." (aunque sea algo repetitivo),
         muestra " adios..."
         y baja.
     gracias,

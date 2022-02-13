@@ -91,6 +91,21 @@ Token Lexer::token(Token::Type type, const std::string &lexeme, std::optional<De
     return {type, lexeme, pos.value_or(debugPos), file};
 }
 
+void Lexer::comentario() {
+    advance();
+
+    while (is_valid() && current_char() != ')') {
+        advance();
+    }
+
+    if (!is_valid()) {
+        std::cerr << "Se encontró un comentario sin cerrar.";
+        throw;
+    }
+    advance();
+
+}
+
 Token Lexer::texto() {
     advance();
     std::stringstream result;
@@ -197,6 +212,11 @@ std::optional<Token> Lexer::get_next() {
     }
 
     ignore_whitespace();
+
+    if (current_char() == '(') {
+        comentario();
+        ignore_whitespace();
+    }
 
     if (is_num()) {
         return numero();

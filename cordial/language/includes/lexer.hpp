@@ -33,6 +33,8 @@ private:
     std::string_view advance(size_t by);
     bool ignore_whitespace();
 
+    void comentario();
+
     Token texto();
     Token numero();
     Token palabra();
