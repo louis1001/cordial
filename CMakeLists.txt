@@ -20,7 +20,8 @@ add_executable(cordial
         cordial/language/src/semantics.cpp
         cordial/language/src/simbolo.cpp
         cordial/language/src/interpreter.cpp
-        cordial/language/includes/valor.cpp)
+        cordial/language/src/valor.cpp
+        cordial/language/src/asm_generator.cpp)
 
 target_compile_definitions(cordial PUBLIC LANG_USE_ES=0)
 

@@ -22,9 +22,9 @@ namespace Cordial {
                [this](const NodoMuestra& muestra) {
                    auto ret_type = visit(muestra.expr);
 
-                   // Only types printable for now
+                   // Only types string for now
                    assert(ret_type != nullptr);
-                   assert(ret_type == tipo_numero() || ret_type == tipo_texto());
+                   assert(ret_type == tipo_texto());
                },
                [](const NodoBaja&) { /* This one just prints */},
                [&result](const NodoTexto& texto) {
