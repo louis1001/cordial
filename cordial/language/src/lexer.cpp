@@ -219,8 +219,8 @@ std::optional<Token> Lexer::get_next() {
         }
     }
 
-    // TODO: enable exception when no token matches
-    //throw;
+    std::cerr << "Se encontró un caracter desconocido `" << current_char() << "`.\n";
+    throw;
 
     return {};
 }
