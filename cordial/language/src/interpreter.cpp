@@ -75,6 +75,22 @@ namespace Cordial {
                    auto operando_de = get<ValorNumero>(rhs->contenido).valor;
 
                    result = std::make_shared<Valor>(tipo_numero(), ValorNumero{ operando_iz / operando_de });
+               },
+               [this, &result](const NodoIgual& igual) {
+                   auto lhs = visit(igual.lhs);
+                   auto rhs = visit(igual.rhs);
+
+                   if (lhs->tipo == tipo_numero()) {
+                       auto operando_iz = get<ValorNumero>(lhs->contenido).valor;
+                       auto operando_de = get<ValorNumero>(rhs->contenido).valor;
+
+                       result = std::make_shared<Valor>(tipo_verdad(), ValorVerdad{ operando_iz == operando_de });
+                   } else { // Tipo verdad
+                       auto operando_iz = get<ValorVerdad>(lhs->contenido).valor;
+                       auto operando_de = get<ValorVerdad>(rhs->contenido).valor;
+
+                       result = std::make_shared<Valor>(tipo_verdad(), ValorVerdad{ operando_iz == operando_de });
+                   }
                }
            },
            node->contenido

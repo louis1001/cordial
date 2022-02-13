@@ -46,6 +46,9 @@ std::string_view Token::Type::name() const {
         case por:
             return "por";
 
+        case es:
+            return "es";
+
         case Type::COUNT:
             return "OPEIUWGB {UHW4B9   AWEG";
     }

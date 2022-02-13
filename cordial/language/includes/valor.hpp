@@ -20,9 +20,14 @@ namespace Cordial {
         std::string valor;
     };
 
+    struct ValorVerdad {
+        bool valor;
+    };
+
     using contenido_val = std::variant<
         ValorNumero,
-        ValorTexto
+        ValorTexto,
+        ValorVerdad
     >;
 
     struct Valor {

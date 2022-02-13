@@ -114,6 +114,16 @@ namespace Cordial {
 //                   auto operando_de = get<ValorNumero>(rhs->contenido).valor;
 //
 //                   result = std::make_shared<Valor>(tipo_numero(), ValorNumero{ operando_iz / operando_de });
+               },
+               [/*this, &output*/](const NodoIgual& igual) {
+                   TODO("Falta implementar comparación de igualdad en el compilador");
+//                   auto lhs = visit(divis.lhs, output);
+//                   auto operando_iz = get<ValorNumero>(lhs->contenido).valor;
+//
+//                   auto rhs = visit(divis.rhs, output);
+//                   auto operando_de = get<ValorNumero>(rhs->contenido).valor;
+//
+//                   result = std::make_shared<Valor>(tipo_numero(), ValorNumero{ operando_iz / operando_de });
                }
            },
            node->contenido

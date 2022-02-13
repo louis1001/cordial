@@ -82,6 +82,12 @@ namespace Cordial {
                    result << visit(division.lhs, counter+1);
                    result << visit(division.rhs, counter+1);
                    result << id << ")";
+               },
+               [&result, id, counter, this](const NodoIgual& igual) {
+                   result << id << "Igualdad(\n";
+                   result << visit(igual.lhs, counter+1);
+                   result << visit(igual.rhs, counter+1);
+                   result << id << ")";
                }
            },
             node->contenido
@@ -90,7 +96,7 @@ namespace Cordial {
         auto position = node->meta.position;
         auto file = node->meta.file;
 
-        result << " (" << file << ":" << position.line << ":" << position.col << ")";
+        result << "\t\t\t\t\t (" << file << ":" << position.line << ":" << position.col << ")";
 
         result << "\n";
 

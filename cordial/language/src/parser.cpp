@@ -51,7 +51,9 @@ void Parser::statement_separator(bool optional) {
 std::vector<Token::Type> Parser::statement_types{
     Token::Type::muestra,
     Token::Type::porfavor,
-    Token::Type::baja
+    Token::Type::baja,
+    // Temporary
+    Token::Type::numero
 };
 
 std::vector<nodo_ptr> Parser::statement_list() {
@@ -163,6 +165,9 @@ nodo_ptr Parser::statement() {
         return block();
     } else if (is_of_type(Token::Type::baja)) {
         return baja();
+    } else {
+        // Temporarily enable expressions as statements.
+        return igualdad();
     }
 
     std::cerr << "Esperaba una oración, pero encontró un token de tipo: `" << current_token->type.name() << "`\n";
@@ -172,7 +177,7 @@ nodo_ptr Parser::statement() {
 nodo_ptr Parser::muestra() {
     return nodo([&]{
         eat(Token::Type::muestra);
-        auto expr = expresion();
+        auto expr = igualdad();
         return NodoMuestra{expr};
     });
 }
@@ -181,6 +186,28 @@ nodo_ptr Parser::baja() {
     return nodo([&]{
         eat(Token::Type::baja);
         return NodoBaja();
+    });
+}
+
+nodo_ptr Parser::igualdad() {
+    std::vector<Token::Type> igual_op {
+            Token::Type::es
+    };
+    return nodo([&]() {
+        auto current = expresion();
+        while (is_of_type(igual_op)) {
+            auto type = current_token->type;
+            eat(type);
+
+            auto pos = lexer.debug_position();
+            auto file = lexer.file_name();
+            current = std::make_shared<Nodo>(
+                    NodoMeta{pos, file},
+                    NodoIgual{current, expresion() }
+            );
+        }
+
+        return current->contenido;
     });
 }
 

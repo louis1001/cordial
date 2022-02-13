@@ -41,6 +41,8 @@ struct Token {
             entre,
             por,
 
+            es,
+
             COUNT
         };
 

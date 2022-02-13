@@ -70,6 +70,11 @@ struct NodoDivi {
     nodo_ptr rhs;
 };
 
+struct NodoIgual {
+    nodo_ptr lhs;
+    nodo_ptr rhs;
+};
+
 // Make more clear with macros?
 using contenido_nodo = std::variant<
     NodoPrograma,
@@ -81,7 +86,9 @@ using contenido_nodo = std::variant<
     NodoSuma,
     NodoResta,
     NodoMulti,
-    NodoDivi
+    NodoDivi,
+
+    NodoIgual
 >;
 
 struct Nodo {

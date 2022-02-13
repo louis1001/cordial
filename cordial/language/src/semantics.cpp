@@ -60,6 +60,13 @@ namespace Cordial {
                    auto rhs = visit(divis.rhs);
                    assert(rhs == tipo_numero());
                    result = tipo_numero();
+               },
+               [this, &result](const NodoIgual& igual) {
+                   auto lhs = visit(igual.lhs);
+                   auto rhs = visit(igual.rhs);
+                   assert(lhs == rhs);
+                   assert(lhs == tipo_numero() || lhs == tipo_verdad());
+                   result = tipo_verdad();
                }
            },
            node->contenido

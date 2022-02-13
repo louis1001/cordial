@@ -6,6 +6,9 @@
 //
 
 #pragma once
+#define TODO(reason) \
+    std::cerr << "TODO: " << reason << std::endl; \
+    throw
 
 namespace Cordial {
     template<class... Ts> struct overloaded : Ts... {

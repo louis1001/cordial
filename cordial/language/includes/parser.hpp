@@ -25,6 +25,7 @@ private:
     nodo_ptr statement();
     nodo_ptr muestra();
     nodo_ptr baja();
+    nodo_ptr igualdad();
     nodo_ptr expresion();
     nodo_ptr termino();
     nodo_ptr literal();

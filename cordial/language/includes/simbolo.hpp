@@ -14,6 +14,8 @@ namespace Cordial {
         std::string nombre;
 
     public:
+        std::string get_nombre() const { return nombre; }
+
         Simbolo(std::string name_)
             : padre({}),
               nombre(std::move(name_)){}
@@ -36,6 +38,11 @@ namespace Cordial {
 
     inline std::shared_ptr<Simbolo> tipo_numero() {
         static const auto numero = std::make_shared<Simbolo>("numero");
+        return numero;
+    }
+
+    inline std::shared_ptr<Simbolo> tipo_verdad() {
+        static const auto numero = std::make_shared<Simbolo>("verdad");
         return numero;
     }
 }
