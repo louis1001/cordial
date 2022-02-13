@@ -19,9 +19,10 @@ void usage(const std::string& command = "cordial") {
     std::cout   << "Uso: "
                 << command << " [opciones] <archivo>\n\n"
                 << "OPCIONES:\n"
-                << "  -h, --help  \t\t" <<   "Muestra esta guía\n"
-                << "  -u, --unsafe\t\t" <<   "Ejecuta sin utilizar analizador semántico\n"
-                << "  -d, --dump  \t\t" <<   "Muestra el árbol de sintaxis\n";
+                << "  -c, --compiles <salida>\t" <<   "Genera asm y compila a un binario nativo\n"
+                << "  -h, --help             \t" <<   "Muestra esta guía\n"
+                << "  -u, --unsafe           \t" <<   "Ejecuta sin utilizar analizador semántico\n"
+                << "  -d, --dump             \t" <<   "Muestra el árbol de sintaxis\n";
 }
 
 void execute(std::string name, std::string command, int separation = 0) {
@@ -46,11 +47,11 @@ int main(int argc, const char * argv[]) {
         return 0;
     }
 
-    std::string compilation_output;
-    cmdl({"--compile", "-c"}, "") >> compilation_output;
-
     std::string filename;
     cmdl(1) >> filename;
+
+    std::string compilation_output;
+    cmdl({"--compile", "-c"}, "") >> compilation_output;
 
     if (filename.empty()) {
         std::cerr << "Falta nombre del archivo." << std::endl;

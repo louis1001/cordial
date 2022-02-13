@@ -32,7 +32,7 @@ private:
 
     static std::vector<Token::Type> statement_types;
 
-    void statement_separator();
+    void statement_separator(bool optional = false);
 
     void eat(Token::Type type);
     void eat(std::vector<Token::Type> types);

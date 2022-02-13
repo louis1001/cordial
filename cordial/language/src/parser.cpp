@@ -31,14 +31,17 @@ nodo_ptr Parser::nodo(std::function<contenido_nodo()> generator) {
     return std::make_shared<Nodo>(meta, contenido);
 }
 
-void Parser::statement_separator() {
+void Parser::statement_separator(bool optional) {
     std::vector<Token::Type> separators {
         Token::Type::punto,
         Token::Type::coma,
         Token::Type::y
     };
 
-    eat(separators);
+    // I hate this logic
+    if (is_of_type(separators) || !optional) {
+        eat(separators);
+    }
 
     while(is_of_type(separators)) {
         eat(current_token->type);
@@ -138,6 +141,7 @@ nodo_ptr Parser::program() {
 nodo_ptr Parser::block() {
     return nodo([&] {
         eat(Token::Type::porfavor);
+        statement_separator(true);
 
         // Conseguir lista de hijos
         auto hijos = statement_list();

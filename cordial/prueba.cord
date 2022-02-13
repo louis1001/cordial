@@ -2,6 +2,12 @@ Esto no debe registrarse como un programa. Ni siquiera si escribo hola.
 La verdad, no se qué tan confuso pueda verse.
 
 Código empezaría aquí:
-hola. porfavor, muestra "Hola, mundo.", muestra " adios..." y baja. gracias, adios.
+hola.
+    porfavor
+        muestra "Hola, mundo.",
+        muestra " adios..."
+        y baja.
+    gracias,
+adios.
 
 Y esto estaría fuera de código. El programa termina luego del primer `adios`.
