@@ -7,10 +7,10 @@ hola.
         muestra "Hola, mundo." (aunque sea algo repetitivo),
         muestra " adios..."
         y baja, baja.
-            (decidí soportar solo coma en sí, porque punto e `y`
+            (decidí soportar solo para terminar la condición en sí, porque punto e `y`
              no tienen mucho sentido en este contexto)
         si 2 por 3 es 6, porfavor
-            muestra "2 * 3 = 6", baja y muestra "Esto está funcionando".
+            muestra "2 * 3 = 6", baja y muestra "Esto está funcionando :D".
             baja.
         gracias.
     gracias,

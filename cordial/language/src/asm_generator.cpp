@@ -77,15 +77,19 @@ namespace Cordial {
                        visit(hijo, output);
                    }
                },
-               [](const NodoSi& si) {
-                   TODO("Implementar sentencia `si` en compilador");
-//                   COMM("Si {");
-//                   INST(mov, "X0, #1");
-//                   visit(muestra.expr, output);
-//
-//                   INST(mov, "X16, #4");
-//                   INST(svc, "#0x18");
-//                   COMM("}");
+               [this, &output](const NodoSi& si) {
+                   auto non_const_this = const_cast<AsmGenerator*>(this);
+                   auto exit_tag = non_const_this->new_tag("if_end_tag");
+                   COMM("Si (");
+                   visit(si.cond, output);
+                   INST(adr, "X2, TRUE");
+                   INST(cmp, "X1, X2");
+
+                   INST(bne, exit_tag);
+                   COMM(") Entonces {");
+                   visit(si.cuerpo, output);
+                   COMM("}");
+                   TAG(exit_tag);
                },
                [this, &output](const NodoMuestra& muestra) {
                    COMM("Muestra {");
