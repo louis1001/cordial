@@ -10,6 +10,14 @@
 #define INST(name, args) output << "  "<< #name << "\t\t" << args << "\n"
 #define COMM(txt) output << "//\t" txt << "\n"
 
+#define PUSH(reg) COMM("Push: " #reg "{");\
+                  INST(str, #reg ", [sp, #-16]!"); \
+                  COMM("}")
+
+#define POP(reg) COMM("Pop to: " #reg "{");\
+                  INST(ldr, #reg ", [sp], #16"); \
+                  COMM("}")
+
 namespace Cordial {
     void AsmGenerator::visit(const nodo_ptr &node, std::stringstream& output) const {
         val_ptr result;
@@ -28,7 +36,9 @@ namespace Cordial {
                    }
                    output << "\n";
                    COMM("Código de salida (exit code)");
-                   INST(mov, "X0, #0");
+                   // Temporalmente usar el resultado de X1
+                   // Para exit code
+                   INST(mov, "X0, X1");
                    INST(mov, "X16, #1");
                    INST(svc, "#0x18");
 
@@ -75,36 +85,41 @@ namespace Cordial {
                    INST(mov, "X2, " << con.size());
                    COMM(")");
                },
-               [/*&output*/](const NodoNumero& numero) {
-//                   auto como_entero = std::stoi(numero.contenido);
-//                   result = std::make_shared<Valor>(tipo_numero(), ValorNumero{como_entero});
+               [&output](const NodoNumero& numero) {
+                   auto num = std::stoi(numero.contenido);
+                   COMM("Numero literal: `" << num << "`(");
+                   INST(mov, "X1, #" << num);
+                   COMM(")");
                },
-               [/*this, &output*/](const NodoSuma& suma) {
-//                   auto lhs = visit(suma.lhs, output);
-//                   auto operando_iz = get<ValorNumero>(lhs->contenido).valor;
-//
-//                   auto rhs = visit(suma.rhs, output);
-//                   auto operando_de = get<ValorNumero>(rhs->contenido).valor;
-//
-//                   result = std::make_shared<Valor>(tipo_numero(), ValorNumero{ operando_iz + operando_de });
+               [this, &output](const NodoSuma& suma) {
+                   COMM("Suma (");
+                   visit(suma.lhs, output);
+                   PUSH(x1);
+
+                   visit(suma.rhs, output);
+                   POP(x2);
+                   INST(add, "X1, X1, X2");
+                   COMM(")");
                },
-               [/*this, &output*/](const NodoResta& resta) {
-//                   auto lhs = visit(resta.lhs, output);
-//                   auto operando_iz = get<ValorNumero>(lhs->contenido).valor;
-//
-//                   auto rhs = visit(resta.rhs, output);
-//                   auto operando_de = get<ValorNumero>(rhs->contenido).valor;
-//
-//                   result = std::make_shared<Valor>(tipo_numero(), ValorNumero{ operando_iz - operando_de });
+               [this, &output](const NodoResta& resta) {
+                   COMM("Resta (");
+                   visit(resta.lhs, output);
+                   PUSH(x1);
+
+                   visit(resta.rhs, output);
+                   POP(x2);
+                   INST(sub, "X1, X1, X2");
+                   COMM(")");
                },
-               [/*this, &output*/](const NodoMulti& multi) {
-//                   auto lhs = visit(multi.lhs, output);
-//                   auto operando_iz = get<ValorNumero>(lhs->contenido).valor;
-//
-//                   auto rhs = visit(multi.rhs, output);
-//                   auto operando_de = get<ValorNumero>(rhs->contenido).valor;
-//
-//                   result = std::make_shared<Valor>(tipo_numero(), ValorNumero{ operando_iz * operando_de });
+               [this, &output](const NodoMulti& multi) {
+                   COMM("Multiplicación (");
+                   visit(multi.lhs, output);
+                   PUSH(x1);
+
+                   visit(multi.rhs, output);
+                   POP(x2);
+                   INST(mul, "X1, X1, X2");
+                   COMM(")");
                },
                [/*this, &output*/](const NodoDivi& divis) {
 //                   auto lhs = visit(divis.lhs, output);
