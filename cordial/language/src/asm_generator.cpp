@@ -18,7 +18,15 @@
                   INST(ldr, #reg ", [sp], #16"); \
                   COMM("}")
 
+#define TAG(name) output << name << ":\n"
+
 namespace Cordial {
+    std::string AsmGenerator::new_tag(const std::string& prefix) {
+        std::stringstream result;
+        result << prefix << tag_counter++;
+        return result.str();
+    }
+
     void AsmGenerator::visit(const nodo_ptr &node, std::stringstream& output) const {
         val_ptr result;
         std::visit(
@@ -53,6 +61,16 @@ namespace Cordial {
                        output << ".ascii ";
                        output << "\"" << str << "\"\n";
                    }
+
+                   output << "\n";
+                   COMM("Boolean literals");
+                   output << ".p2align 2\n";
+                   output << "TRUE:\t\t\t";
+                   output << ".byte 1\n\n";
+
+                   output << ".p2align 2\n";
+                   output << "FALSE:\t\t\t";
+                   output << ".byte 0\n";
                },
                [this, &output](const NodoBloque& bloque) {
                    for (const auto& hijo : bloque.hijos) {
@@ -130,15 +148,31 @@ namespace Cordial {
 //
 //                   result = std::make_shared<Valor>(tipo_numero(), ValorNumero{ operando_iz / operando_de });
                },
-               [/*this, &output*/](const NodoIgual& igual) {
-                   TODO("Falta implementar comparación de igualdad en el compilador");
-//                   auto lhs = visit(divis.lhs, output);
-//                   auto operando_iz = get<ValorNumero>(lhs->contenido).valor;
-//
-//                   auto rhs = visit(divis.rhs, output);
-//                   auto operando_de = get<ValorNumero>(rhs->contenido).valor;
-//
-//                   result = std::make_shared<Valor>(tipo_numero(), ValorNumero{ operando_iz / operando_de });
+               [this, &output](const NodoIgual& igual) {
+                   COMM("Igual (");
+                   visit(igual.lhs, output);
+                   PUSH(x1);
+
+                   visit(igual.rhs, output);
+                   POP(x2);
+                   INST(cmp, "X1, X2");
+
+                   auto non_const_this = const_cast<AsmGenerator*>(this);
+                   auto false_tag = non_const_this->new_tag("igualdad_es_false_");
+                   non_const_this->tag_counter--;
+                   auto exit_tag = non_const_this->new_tag("salida_igualdad_");
+                   INST(bne, false_tag);
+                   COMM("If X1 is equal to X2");
+                   INST(adr, "X1, TRUE");
+                   INST(b, exit_tag);
+
+                   TAG(false_tag);
+                   COMM("If X1 is not equal to X2");
+                   INST(adr, "X1, FALSE");
+
+                   TAG(exit_tag);
+
+                   COMM(")");
                }
            },
            node->contenido

@@ -12,7 +12,10 @@
 
 namespace Cordial {
     class AsmGenerator {
+        int tag_counter = 0;
         std::vector<std::string> strings;
+
+        std::string new_tag(const std::string& prefix);
     public:
         void visit(const nodo_ptr &node, std::stringstream& output) const;
     };

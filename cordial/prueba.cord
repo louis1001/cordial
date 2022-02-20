@@ -8,9 +8,9 @@ hola.
         muestra " adios..."
         y baja.
         porfavor
-            2 por 3 mas 2( es 3).
+            2 por 3 mas 2 es 3.
             (Para probar, el ultimo numero en memoria
-            será el código de salida. En este caso, 8)
+            será el código de salida. En este caso, el valor interno de TRUE)
         gracias.
     gracias,
 adios.
