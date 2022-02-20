@@ -66,6 +66,9 @@ namespace Cordial {
                [&result, id](const NodoNumero& numero) {
                    result << id << "Numero(" << numero.contenido << ")";
                },
+               [&result, id](const NodoVerdad& verdad) {
+                   result << id << "Verdad(" << (verdad.contenido ? "cierto" : "falso") << ")";
+               },
                [&result, id, counter, this](const NodoSuma& suma) {
                    result << id << "Suma(\n";
                    result << visit(suma.lhs, counter+1);

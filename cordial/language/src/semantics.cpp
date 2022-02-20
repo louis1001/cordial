@@ -33,11 +33,14 @@ namespace Cordial {
                    assert(ret_type == tipo_texto());
                },
                [](const NodoBaja&) { /* This one just prints */},
-               [&result](const NodoTexto& texto) {
+               [&result](const NodoTexto&) {
                    result = tipo_texto();
                },
-               [&result](const NodoNumero& numero) {
+               [&result](const NodoNumero&) {
                    result = tipo_numero();
+               },
+               [&result](const NodoVerdad&) {
+                   result = tipo_verdad();
                },
                [this, &result](const NodoSuma& suma) {
                    auto lhs = visit(suma.lhs);

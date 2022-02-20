@@ -123,6 +123,11 @@ namespace Cordial {
                    INST(mov, "X1, #" << num);
                    COMM(")");
                },
+               [&output](const NodoVerdad& verdad) {
+                   COMM("Verdad literal: `" << (verdad.contenido ? "cierto" : "falso") << "`(");
+                   INST(adr, "X1, " << (verdad.contenido ? "TRUE" : "FALSE"));
+                   COMM(")");
+               },
                [this, &output](const NodoSuma& suma) {
                    COMM("Suma (");
                    visit(suma.lhs, output);

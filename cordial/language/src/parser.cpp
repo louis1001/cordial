@@ -305,6 +305,12 @@ nodo_ptr Parser::literal() {
             eat(Token::Type::numero);
             return NodoNumero{token.lexeme};
         });
+    } else if (is_of_type({Token::Type::cierto, Token::Type::falso})) {
+        return nodo([&, tk=current_token] {
+            eat(tk->type);
+
+            return NodoVerdad { tk->type == Token::Type::cierto };
+        });
     }
 
     std::cerr << "Esperaba una literal, pero encontró un token de tipo: `" << current_token->type.name() << "`\n";

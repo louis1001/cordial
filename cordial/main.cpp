@@ -59,8 +59,6 @@ int main(int argc, const char * argv[]) {
         return 1;
     }
 
-    std::cout << filename << "\n";
-
     std::fstream source_file(filename);
 
     std::string code((std::istreambuf_iterator<char>(source_file)),

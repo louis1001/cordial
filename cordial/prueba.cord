@@ -9,7 +9,7 @@ hola.
         y baja, baja.
             (decidí soportar solo para terminar la condición en sí, porque punto e `y`
              no tienen mucho sentido en este contexto)
-        si 2 por 3 es 6, porfavor
+        si 2 por 3 es 6 es cierto, porfavor
             muestra "2 * 3 = 6", baja y muestra "Esto está funcionando :D".
             baja.
         gracias.

@@ -22,6 +22,12 @@ std::string_view Token::Type::name() const {
             return "gracias";
         case Type::si:
             return "si";
+
+        case Type::cierto:
+            return "cierto";
+        case Type::falso:
+            return "falso";
+
         case Type::coma:
             return "coma";
         case Type::punto:

@@ -13,6 +13,7 @@
 #include <variant>
 
 #include "utils.hpp"
+#include "token.hpp"
 
 namespace Cordial {
 
@@ -55,6 +56,10 @@ struct NodoNumero {
     std::string contenido;
 };
 
+struct NodoVerdad {
+    bool contenido;
+};
+
 struct NodoSuma {
     nodo_ptr lhs;
     nodo_ptr rhs;
@@ -89,6 +94,7 @@ using contenido_nodo = std::variant<
     NodoBaja,
     NodoTexto,
     NodoNumero,
+    NodoVerdad,
     NodoSuma,
     NodoResta,
     NodoMulti,

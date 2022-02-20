@@ -27,6 +27,9 @@ struct Token {
 
             si,
 
+            cierto,
+            falso,
+
             muestra,
             baja,
 

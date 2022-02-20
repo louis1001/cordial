@@ -48,6 +48,9 @@ namespace Cordial {
                    auto como_entero = std::stoi(numero.contenido);
                    result = std::make_shared<Valor>(tipo_numero(), ValorNumero{como_entero});
                },
+               [&result](const NodoVerdad& verdad) {
+                   result = std::make_shared<Valor>(tipo_verdad(), ValorVerdad{verdad.contenido});
+               },
                [this, &result](const NodoSuma& suma) {
                    auto lhs = visit(suma.lhs);
                    auto operando_iz = get<ValorNumero>(lhs->contenido).valor;
