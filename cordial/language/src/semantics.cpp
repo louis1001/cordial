@@ -19,6 +19,12 @@ namespace Cordial {
                        visit(hijo);
                    }
                },
+               [this](const NodoSi& si) {
+                   auto cond_type = visit(si.cond);
+                   assert(cond_type == tipo_verdad());
+
+                   visit(si.cuerpo);
+               },
                [this](const NodoMuestra& muestra) {
                    auto ret_type = visit(muestra.expr);
 

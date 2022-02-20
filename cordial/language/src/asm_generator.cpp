@@ -77,6 +77,16 @@ namespace Cordial {
                        visit(hijo, output);
                    }
                },
+               [](const NodoSi& si) {
+                   TODO("Implementar sentencia `si` en compilador");
+//                   COMM("Si {");
+//                   INST(mov, "X0, #1");
+//                   visit(muestra.expr, output);
+//
+//                   INST(mov, "X16, #4");
+//                   INST(svc, "#0x18");
+//                   COMM("}");
+               },
                [this, &output](const NodoMuestra& muestra) {
                    COMM("Muestra {");
                    INST(mov, "X0, #1");

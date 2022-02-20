@@ -23,6 +23,7 @@ private:
     nodo_ptr program();
     nodo_ptr block();
     nodo_ptr statement();
+    nodo_ptr si();
     nodo_ptr muestra();
     nodo_ptr baja();
     nodo_ptr igualdad();

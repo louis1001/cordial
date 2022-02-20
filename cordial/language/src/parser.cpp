@@ -52,6 +52,7 @@ std::vector<Token::Type> Parser::statement_types{
     Token::Type::muestra,
     Token::Type::porfavor,
     Token::Type::baja,
+    Token::Type::si,
     // Temporary
     Token::Type::numero
 };
@@ -165,6 +166,8 @@ nodo_ptr Parser::statement() {
         return block();
     } else if (is_of_type(Token::Type::baja)) {
         return baja();
+    } else if (is_of_type(Token::Type::si)) {
+        return si();
     } else {
         // Temporarily enable expressions as statements.
         return igualdad();
@@ -172,6 +175,20 @@ nodo_ptr Parser::statement() {
 
     std::cerr << "Esperaba una oración, pero encontró un token de tipo: `" << current_token->type.name() << "`\n";
     throw;
+}
+
+nodo_ptr Parser::si() {
+    return nodo([&]{
+        eat(Token::Type::si);
+
+        auto cond = igualdad();
+
+        eat(Token::Type::coma);
+
+        auto body = statement();
+
+        return NodoSi { cond, body };
+    });
 }
 
 nodo_ptr Parser::muestra() {

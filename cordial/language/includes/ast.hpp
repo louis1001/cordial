@@ -36,6 +36,11 @@ struct NodoBloque {
     std::vector<nodo_ptr> hijos;
 };
 
+struct NodoSi {
+    nodo_ptr cond;
+    nodo_ptr cuerpo;
+};
+
 struct NodoMuestra {
     nodo_ptr expr;
 };
@@ -79,6 +84,7 @@ struct NodoIgual {
 using contenido_nodo = std::variant<
     NodoPrograma,
     NodoBloque,
+    NodoSi,
     NodoMuestra,
     NodoBaja,
     NodoTexto,

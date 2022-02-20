@@ -45,6 +45,13 @@ namespace Cordial {
 
                    result << id << "}";
                },
+               [&result, id, counter, this](const NodoSi& si) {
+                   result << id << "Si (\n";
+                   result << visit(si.cond, counter+1);
+                   result << id << ") Entonces {\n";
+                   result << visit(si.cuerpo, counter+1);
+                   result << id << "}";
+               },
                [&result, id, counter, this](const NodoMuestra& muestra) {
                    result << id << "Muestra (\n";
                    result << visit(muestra.expr, counter+1);
@@ -54,7 +61,7 @@ namespace Cordial {
                    result << id << "SaltoDeLinea ()";
                },
                [&result, id](const NodoTexto& texto) {
-                   result << id << "Texto(" << texto.contenido << ")";
+                   result << id << "Texto(`" << texto.contenido << "`)";
                },
                [&result, id](const NodoNumero& numero) {
                    result << id << "Numero(" << numero.contenido << ")";

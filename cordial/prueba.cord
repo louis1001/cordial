@@ -6,11 +6,12 @@ hola.
 (comentario sin sentido) porfavor,
         muestra "Hola, mundo." (aunque sea algo repetitivo),
         muestra " adios..."
-        y baja.
-        porfavor
-            2 por 3 mas 2 es 3.
-            (Para probar, el ultimo numero en memoria
-            será el código de salida. En este caso, el valor interno de TRUE)
+        y baja, baja.
+            (decidí soportar solo coma en sí, porque punto e `y`
+             no tienen mucho sentido en este contexto)
+        si 2 por 3 es 6, porfavor
+            muestra "2 * 3 = 6", baja y muestra "Esto está funcionando".
+            baja.
         gracias.
     gracias,
 adios.

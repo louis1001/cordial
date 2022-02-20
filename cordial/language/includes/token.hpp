@@ -25,6 +25,8 @@ struct Token {
             porfavor,
             gracias,
 
+            si,
+
             muestra,
             baja,
 

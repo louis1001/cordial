@@ -20,6 +20,8 @@ std::string_view Token::Type::name() const {
             return "porfavor";
         case Type::gracias:
             return "gracias";
+        case Type::si:
+            return "si";
         case Type::coma:
             return "coma";
         case Type::punto:

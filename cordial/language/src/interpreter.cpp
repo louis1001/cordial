@@ -22,6 +22,14 @@ namespace Cordial {
                        visit(hijo);
                    }
                },
+               [this](const NodoSi& si) {
+                   auto value = visit(si.cond);
+                   if (const auto actual_value = std::get_if<ValorVerdad>(&value->contenido)) {
+                       if (actual_value->valor) {
+                           (void) visit(si.cuerpo);
+                       }
+                   }
+               },
                [this](const NodoMuestra& muestra) {
                    auto value = visit(muestra.expr);
                    if (const auto num_value = get_if<ValorNumero>(&value->contenido)) {
