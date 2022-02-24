@@ -94,7 +94,13 @@ Token Lexer::token(Token::Type type, const std::string &lexeme, std::optional<De
 void Lexer::comentario() {
     advance();
 
-    while (is_valid() && current_char() != ')') {
+    int count = 1;
+    while (is_valid() && count > 0) {
+        if (current_char() == '(') {
+            count++;
+        } else if (current_char() == ')') {
+            count--;
+        }
         advance();
     }
 
@@ -213,7 +219,7 @@ std::optional<Token> Lexer::get_next() {
 
     ignore_whitespace();
 
-    if (current_char() == '(') {
+    while (current_char() == '(') {
         comentario();
         ignore_whitespace();
     }
