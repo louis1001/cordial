@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <utility>
 
 #include "utils.hpp"
 #include "bcprogram.hpp"
@@ -22,6 +23,8 @@ Cordial::Bytecode::Program::Program(const std::string &filename) {
         code.push_back(byte);
     }
 }
+
+Cordial::Bytecode::Program::Program(std::vector<u8>  code_): code(std::move(code_)) {}
 
 template<typename ut>
 void Cordial::Bytecode::Program::set(u64 addr, ut val) {

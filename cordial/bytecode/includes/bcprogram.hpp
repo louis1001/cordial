@@ -22,6 +22,7 @@ namespace Cordial::Bytecode {
     public:
         u64 pc() { return code.size(); }
         explicit Program(const std::string& filename);
+        explicit Program(std::vector<u8>  code);
 
         Program() = default;
 

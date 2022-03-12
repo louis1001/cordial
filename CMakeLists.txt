@@ -23,7 +23,8 @@ add_executable(cordial
         cordial/language/src/valor.cpp
         cordial/language/src/asm_generator.cpp
         cordial/bytecode/src/bcprogram.cpp
-        cordial/bytecode/src/OpCodes.cpp)
+        cordial/bytecode/src/vm.cpp
+        )
 
 target_compile_definitions(cordial PUBLIC LANG_USE_ES=0)
 
