@@ -6,6 +6,8 @@
 //
 
 #pragma once
+#include <iomanip>
+#include <iostream>
 #define TODO(reason) \
     std::cerr << "TODO: " << reason << std::endl; \
     throw
@@ -30,6 +32,18 @@ struct DebugPosition {
 
     inline void bump_col(size_t by = 1) { col += by; }
 };
+
+template<typename T>
+void print_hex(T val, int pad, std::ostream& output = std::cout) {
+    output << "0x" << std::setfill('0') << std::setw(pad) << std::hex << val;
+    output << std::dec << std::setw(0);
+}
+
+template<typename T>
+void print_hex(T val, std::ostream& output = std::cout) {
+    std::cout << "0x" << std::setfill('0') << std::setw(sizeof(T)) << std::hex << val;
+    std::cout << std::dec << std::setw(0);
+}
 
 }
 
