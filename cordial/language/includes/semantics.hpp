@@ -11,7 +11,7 @@
 namespace Cordial {
     class Semantics {
     public:
-        std::shared_ptr<Simbolo> visit(const nodo_ptr &node) const;
+        std::shared_ptr<Simbolo> visit(nodo_ptr &node) const;
     };
 }
 
