@@ -175,10 +175,52 @@ void Cordial::Bytecode::Program::print_int(u8 reg)  {
 void Cordial::Bytecode::Program::print()  {
     std::stringstream ss;
     for(auto i = 0; i < bytes().size(); i++) {
-        int b = bytes()[i];
+        ss << std::dec << std::setw(4) << i << ":\t";
 
-        ss << std::setfill('0') << std::setw(3) << i << ": ";
-        print_hex(b, 2, ss);
+        auto b = static_cast<Op>(bytes()[i]);
+
+        ss << op_name(b) << "\t";
+        switch (b) {
+            case EXT:
+                break;
+            case NOP:
+                break;
+            case LDR: {
+                print_hex(static_cast<int>(bytes()[++i]), 2, ss);
+                ss << ", ";
+
+                auto result = 0;
+                for (int j = 0; j < sizeof(u64); j++) {
+                    result <<= 8;
+                    result |= bytes()[++i];
+                }
+
+                ss << "#" << result;
+                break;
+            }
+            case ADD: {
+                print_hex(static_cast<int>(bytes()[++i]), 2, ss);
+                ss << ", ";
+                print_hex(static_cast<int>(bytes()[++i]), 2, ss);
+                break;
+            }
+            case SUB: {
+                print_hex(static_cast<int>(bytes()[++i]), 2, ss);
+                ss << ", ";
+                print_hex(static_cast<int>(bytes()[++i]), 2, ss);
+                break;
+            }
+            case PSH:
+                print_hex(static_cast<int>(bytes()[++i]), 2, ss);
+                break;
+            case POP:
+                print_hex(static_cast<int>(bytes()[++i]), 2, ss);
+                break;
+            default:
+                ss << "(unhandled)";
+                break;
+        }
+
         ss << "\n";
     }
 

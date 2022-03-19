@@ -6,6 +6,7 @@
 #define CORDIAL_OPCODES_H
 
 #include <inttypes.h>
+#include <string>
 
 using u64 = uint64_t;
 using u8 = uint8_t;
@@ -16,6 +17,7 @@ namespace Cordial::Bytecode {
         NOP = 69,
         LDR = 0x2,
         ADD = 0x3,
+        SUB = 0x4,
         EQU = 0x6,
         CP  = 0x7,
         GT  = 0x8,
@@ -34,6 +36,8 @@ namespace Cordial::Bytecode {
         DIV = 0x15,
         MOD = 0x16,
     };
+
+    std::string op_name(Op);
 
 }
 

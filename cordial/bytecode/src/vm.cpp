@@ -90,6 +90,19 @@ void Cordial::Bytecode::VM::execute_byte() {
 #endif
             break;
         }
+        case SUB: {
+            auto dst = take_byte();
+            auto src = take_byte();
+
+            auto result = registers[dst] - registers[src];
+            registers[dst] = result;
+#if DEBUG
+            std::cout << "Adding R" << static_cast<int>(dst) << " and R" << static_cast<int>(src) << " = ";
+                print_hex(result);
+                std::cout << "\n";
+#endif
+            break;
+        }
         case EQU: {
             auto dst = take_byte();
 
@@ -257,8 +270,12 @@ void Cordial::Bytecode::VM::execute_byte() {
             break;
         }
         default:
-            std::cout << "Código invalido (pc: " << pc << "): ";
+            std::cout << "Código invalido (pc: " << pc-1 << "): ";
             print_hex(static_cast<int>(code()[pc - 1]), 2);
+            auto name = op_name((Op) code()[pc - 1]);
+            if (!name.empty()) {
+                std::cout << " (" << name << " not handled)";
+            }
             std::cout << "\n";
             exit(1);
     }

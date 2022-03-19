@@ -14,6 +14,8 @@
 #include "asm_generator.hpp"
 #include "ast_dump.h"
 #include "argh.h"
+#include "bc_generator.hpp"
+#include "vm.hpp"
 
 void usage(const std::string& command = "cordial") {
     std::cout   << "Uso: "
@@ -75,6 +77,17 @@ int main(int argc, const char * argv[]) {
         Cordial::Semantics semAn;
         (void)semAn.visit(result);
     }
+
+    Cordial::BCGenerator bc;
+    auto p = bc.generate(result);
+
+//    p->print();
+
+    Cordial::Bytecode::VM vm{ p };
+
+    vm.execute();
+
+    return 0;
 
     if (cmdl[{"-d", "--dump"}]) {
         Cordial::ASTDumper visitor;

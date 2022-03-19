@@ -4,6 +4,8 @@ La verdad, no se qué tan confuso pueda verse.
 Código empezaría aquí:
 hola.
 (comentario sin sentido) porfavor,
+    muestra 2 mas 1 menos 3.
+(
         muestra "Hola, mundo." (aunque sea algo repetitivo),
         muestra " adios..."
         y baja, baja.
@@ -13,6 +15,7 @@ hola.
             muestra "2 * 3 = 6", baja y muestra "Esto está funcionando :D".
             baja.
         gracias.
+)
     gracias,
 adios.
 

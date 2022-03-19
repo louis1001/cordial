@@ -44,6 +44,7 @@ struct NodoSi {
 
 struct NodoMuestra {
     nodo_ptr expr;
+    bool es_txt { true };
 };
 
 struct NodoBaja {};
