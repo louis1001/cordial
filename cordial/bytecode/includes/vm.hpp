@@ -64,7 +64,7 @@ int main() {
 
 namespace Cordial::Bytecode {
     struct VM {
-        explicit VM(std::shared_ptr <Program> program_)
+        explicit VM(Program program_)
             : program(std::move(program_)) {}
 
     private:
@@ -74,9 +74,9 @@ namespace Cordial::Bytecode {
 
         std::vector <std::string> strings{};
 
-        const std::shared_ptr <Program> program;
+        const Program program;
 
-        const std::vector <u8>& code() { return program->bytes(); }
+        const std::vector <u8>& code() { return program.code(); }
 
         std::vector<u8> take(u64 bytes);
 

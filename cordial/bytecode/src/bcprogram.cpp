@@ -20,60 +20,64 @@ Cordial::Bytecode::Program::Program(const std::string &filename) {
 
     char byte;
     while(f.get(byte)) {
-        code.push_back(byte);
+        m_code.push_back(byte);
     }
 }
 
-Cordial::Bytecode::Program::Program(std::vector<u8>  code_): code(std::move(code_)) {}
+Cordial::Bytecode::Program::Program(std::vector<u8>  code_): m_code(std::move(code_)) {}
 
 template<typename ut>
 void Cordial::Bytecode::Program::set(u64 addr, ut val) {
-
     auto sz = sizeof(ut);
-    assert(code.size() - addr > sz);
+    assert(m_code.size() - addr > sz);
 
     for (int i = sz-1; i >= 0; i--) {
         u8 byte = val & 0xFF;
-        code[addr+i] = byte;
+        m_code[addr+i] = byte;
 
         val >>= 8;
     }
 }
 
-void Cordial::Bytecode::Program::inst(Op inst, const std::vector<u8>& operands) {
-    code.push_back(inst);
-
-    for(auto n : operands) { code.push_back(n); }
+template<typename ut>
+void Cordial::Bytecode::ProgramBuilder::set(u64 addr, ut val) {
+    the_program.set<ut>(addr, val);
 }
 
-void Cordial::Bytecode::Program::inst(Op inst, u8 arg, const std::vector<u8>& operands) {
-    code.push_back(inst);
+void Cordial::Bytecode::ProgramBuilder::inst(Op inst, const std::vector<u8>& operands) {
+    the_program.insert(inst);
 
-    code.push_back(arg);
-
-    for(auto n : operands) { code.push_back(n); }
+    for(auto n : operands) { the_program.insert(n); }
 }
 
-void Cordial::Bytecode::Program::inst(Op inst, u8 arg1, u8 arg2) {
-    code.push_back(inst);
+void Cordial::Bytecode::ProgramBuilder::inst(Op inst, u8 arg, const std::vector<u8>& operands) {
+    the_program.insert(inst);
 
-    code.push_back(arg1);
-    code.push_back(arg2);
+    the_program.insert(arg);
+
+    for(auto n : operands) { the_program.insert(n); }
 }
 
-void Cordial::Bytecode::Program::str(u8 reg, const std::string_view new_string) {
-    code.push_back(STR);
+void Cordial::Bytecode::ProgramBuilder::inst(Op inst, u8 arg1, u8 arg2) {
+    the_program.insert(inst);
 
-    code.push_back(reg);
+    the_program.insert(arg1);
+    the_program.insert(arg2);
+}
+
+void Cordial::Bytecode::ProgramBuilder::str(u8 reg, const std::string_view new_string) {
+    the_program.insert(STR);
+
+    the_program.insert(reg);
 
     for (auto c : new_string) {
-        code.push_back(c);
+        the_program.insert(c);
     }
 
-    code.push_back('\0');
+    the_program.insert('\0');
 }
 
-void Cordial::Bytecode::Program::whl(const std::function<void()> &preparation, u8 comparisson,
+void Cordial::Bytecode::ProgramBuilder::whl(const std::function<void()> &preparation, u8 comparisson,
                                      const std::function<void()> &body) {
     u64 while_start = pc();
     preparation();
@@ -88,7 +92,7 @@ void Cordial::Bytecode::Program::whl(const std::function<void()> &preparation, u
 }
 
 template<typename ut>
-std::vector<u8> Cordial::Bytecode::Program::repr(ut val) {
+std::vector<u8> Cordial::Bytecode::ProgramBuilder::repr(ut val) {
     auto sz = sizeof(ut);
     std::vector<u8> result(sz);
     for (auto i = sz-1; val > 0; i--) {
@@ -101,17 +105,17 @@ std::vector<u8> Cordial::Bytecode::Program::repr(ut val) {
     return result;
 }
 
-void Cordial::Bytecode::Program::dump(const std::string &file) {
+void Cordial::Bytecode::ProgramBuilder::dump(const std::string &file) {
     std::fstream f(file, std::ios_base::out | std::ios_base::binary);
 
-    for (auto b : bytes()) {
+    for (auto b : the_program.code()) {
         f << b;
     }
 
     f.close();
 }
 
-void Cordial::Bytecode::Program::print_int(u8 reg)  {
+void Cordial::Bytecode::ProgramBuilder::print_int(u8 reg)  {
     u8 ten = 0x1;
     u8 counter = 0x2;
     u8 zero_char = 0x3;
@@ -129,11 +133,22 @@ void Cordial::Bytecode::Program::print_int(u8 reg)  {
     push(zero);
     push(input);
 
+    inst(LDR, zero_char, ProgramBuilder::repr<u64>('0'));
+
+    inst(JPT, reg, repr<u64>(0)); // if reg == 0 {
+    u64 target = pc() - sizeof(u64);
+
+    inst(PCH, zero_char);                       // print('0')
+
+    inst(JMP, repr<u64>(0));  //}
+    u64 end_target = pc()-sizeof(u64);          // else {
+
+    set(target, pc());
+
     inst(CP, input, reg);
-    inst(LDR, counter, Program::repr<u64>(0));
-    inst(LDR, ten, Program::repr<u64>(10));
-    inst(LDR, zero, Program::repr<u64>(0));
-    inst(LDR, zero_char, Program::repr<u64>('0'));
+    inst(LDR, counter, ProgramBuilder::repr<u64>(0));
+    inst(LDR, ten, ProgramBuilder::repr<u64>(10));
+    inst(LDR, zero, ProgramBuilder::repr<u64>(0));
 
     inst(NOP);
 
@@ -162,6 +177,8 @@ void Cordial::Bytecode::Program::print_int(u8 reg)  {
                 inst(PCH, character);
             });
 
+    set(end_target, pc());                  // }
+
     pop(input);
     pop(zero);
     pop(comp);
@@ -172,12 +189,13 @@ void Cordial::Bytecode::Program::print_int(u8 reg)  {
     pop(reg);
 }
 
-void Cordial::Bytecode::Program::print()  {
+void Cordial::Bytecode::ProgramBuilder::print()  {
     std::stringstream ss;
-    for(auto i = 0; i < bytes().size(); i++) {
+    const auto& bytes = the_program.code();
+    for(auto i = 0; i < bytes.size(); i++) {
         ss << std::dec << std::setw(4) << i << ":\t";
 
-        auto b = static_cast<Op>(bytes()[i]);
+        auto b = static_cast<Op>(bytes[i]);
 
         ss << op_name(b) << "\t";
         switch (b) {
@@ -186,36 +204,40 @@ void Cordial::Bytecode::Program::print()  {
             case NOP:
                 break;
             case LDR: {
-                print_hex(static_cast<int>(bytes()[++i]), 2, ss);
+                print_hex(static_cast<int>(bytes[++i]), 2, ss);
                 ss << ", ";
 
                 auto result = 0;
                 for (int j = 0; j < sizeof(u64); j++) {
                     result <<= 8;
-                    result |= bytes()[++i];
+                    result |= bytes[++i];
                 }
 
                 ss << "#" << result;
                 break;
             }
             case ADD: {
-                print_hex(static_cast<int>(bytes()[++i]), 2, ss);
+                print_hex(static_cast<int>(bytes[++i]), 2, ss);
                 ss << ", ";
-                print_hex(static_cast<int>(bytes()[++i]), 2, ss);
+                print_hex(static_cast<int>(bytes[++i]), 2, ss);
                 break;
             }
             case SUB: {
-                print_hex(static_cast<int>(bytes()[++i]), 2, ss);
+                print_hex(static_cast<int>(bytes[++i]), 2, ss);
                 ss << ", ";
-                print_hex(static_cast<int>(bytes()[++i]), 2, ss);
+                print_hex(static_cast<int>(bytes[++i]), 2, ss);
                 break;
             }
             case PSH:
-                print_hex(static_cast<int>(bytes()[++i]), 2, ss);
-                break;
             case POP:
-                print_hex(static_cast<int>(bytes()[++i]), 2, ss);
+                print_hex(static_cast<int>(bytes[++i]), 2, ss);
                 break;
+            case CP: {
+                print_hex(static_cast<int>(bytes[++i]), 2, ss);
+                ss << ", ";
+                print_hex(static_cast<int>(bytes[++i]), 2, ss);
+                break;
+            }
             default:
                 ss << "(unhandled)";
                 break;

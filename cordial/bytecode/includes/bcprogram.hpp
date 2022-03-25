@@ -7,24 +7,42 @@
 
 #include "OpCodes.hpp"
 
+#include <utility>
 #include <vector>
 #include <string>
 
 namespace Cordial::Bytecode {
     struct Program {
-    private:
-        std::vector<u8> code;
-
-        void insert(const std::vector<u8>& bytes) {
-            for(auto n : bytes) { code.push_back(n); }
-        }
+    protected:
+        std::vector<u8> m_code;
 
     public:
-        u64 pc() { return code.size(); }
+        Program() = default;
         explicit Program(const std::string& filename);
         explicit Program(std::vector<u8>  code);
 
-        Program() = default;
+        u64 size() { return m_code.size(); }
+
+        void insert(u8 val) { m_code.push_back(val); }
+        template<typename ut>
+        void set(u64 addr, ut val);
+
+        const std::vector<u8> & code() const { return m_code; }
+    };
+
+    struct ProgramBuilder {
+    private:
+        Program the_program;
+
+        void insert(const std::vector<u8>& bytes) {
+            for(auto n : bytes) { the_program.insert(n); }
+        }
+
+    public:
+        u64 pc() { return the_program.size(); }
+
+        explicit ProgramBuilder(Program prg): the_program(std::move(prg)) {}
+        ProgramBuilder() = default;
 
         template<typename ut>
         void set(u64 addr, ut val);
@@ -37,7 +55,7 @@ namespace Cordial::Bytecode {
 
         void str(u8 reg, const std::string_view new_string);
 
-        inline void ext() { code.push_back(EXT); }
+        inline void ext() { the_program.insert(EXT); }
 
         inline void push(u8 reg) { inst(PSH, reg); }
 
@@ -48,13 +66,13 @@ namespace Cordial::Bytecode {
         template<typename ut>
         static std::vector<u8> repr(ut val);
 
-        const std::vector<u8>& bytes() { return code; }
-
         void dump(const std::string& file);
 
         void print_int(u8 reg);
 
         void print();
+
+        const Program& program() { return the_program; }
     };
 }
 

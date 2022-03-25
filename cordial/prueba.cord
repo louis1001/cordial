@@ -4,7 +4,9 @@ La verdad, no se qué tan confuso pueda verse.
 Código empezaría aquí:
 hola.
 (comentario sin sentido) porfavor,
-    muestra 2 mas 1 menos 3.
+    muestra "Esto es un cálculo en runtime:" y baja.
+    muestra "20 mas 4 menos 21 es " y
+    muestra  20 mas 4 menos 21.
 (
         muestra "Hola, mundo." (aunque sea algo repetitivo),
         muestra " adios..."

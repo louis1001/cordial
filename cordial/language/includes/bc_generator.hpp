@@ -10,10 +10,10 @@
 
 namespace Cordial {
     class BCGenerator {
-        void visit(const nodo_ptr&, const std::shared_ptr<Bytecode::Program>&);
+        void visit(const nodo_ptr&, const std::shared_ptr<Bytecode::ProgramBuilder>&);
 
     public:
-        std::shared_ptr<Bytecode::Program> generate(const nodo_ptr&);
+        std::shared_ptr<Bytecode::ProgramBuilder> generate(const nodo_ptr&);
     };
 }
 

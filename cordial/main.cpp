@@ -83,7 +83,7 @@ int main(int argc, const char * argv[]) {
 
 //    p->print();
 
-    Cordial::Bytecode::VM vm{ p };
+    Cordial::Bytecode::VM vm{ p->program() };
 
     vm.execute();
 

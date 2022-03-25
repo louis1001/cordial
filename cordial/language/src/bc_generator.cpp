@@ -5,7 +5,7 @@
 #include "utils.hpp"
 #include "bc_generator.hpp"
 
-void Cordial::BCGenerator::visit(const Cordial::nodo_ptr & node, const std::shared_ptr<Bytecode::Program>& p) {
+void Cordial::BCGenerator::visit(const Cordial::nodo_ptr & node, const std::shared_ptr<Bytecode::ProgramBuilder>& p) {
     std::visit(overloaded{
                [this, p](const NodoPrograma& programa) {
                    for (const auto& child : programa.hijos) {
@@ -23,21 +23,21 @@ void Cordial::BCGenerator::visit(const Cordial::nodo_ptr & node, const std::shar
                [this, p](const NodoMuestra& muestra) {
                    visit(muestra.expr, p);
                    if (muestra.es_txt) {
-                       // TODO: Soportar mostrar texto
-                       TODO("Mostrar texto no implementado.");
+                       p->inst(Bytecode::PNT, 0x1);
                    } else {
                        p->print_int(0x1);
                    }
                },
-               [](const NodoBaja&) {
-                   TODO("Control de flujo sin implementar.");
+               [p](const NodoBaja&) {
+                   p->inst(Bytecode::LDR, 0x3, Bytecode::ProgramBuilder::repr<u64>('\n'));
+                   p->inst(Bytecode::PCH, 0x3);
                },
-               [](const NodoTexto& texto) {
-                   TODO("Manejar textos");
+               [p](const NodoTexto& texto) {
+                   p->str(0x1, texto.contenido);
                },
                [p](const NodoNumero& numero) {
                    auto n = std::stoi(numero.contenido);
-                   p->inst(Bytecode::LDR, 0x1, Bytecode::Program::repr<u64>(n));
+                   p->inst(Bytecode::LDR, 0x1, Bytecode::ProgramBuilder::repr<u64>(n));
                },
                [](const NodoVerdad& verdad) {
                    TODO("Manejar verdades");
@@ -76,8 +76,8 @@ void Cordial::BCGenerator::visit(const Cordial::nodo_ptr & node, const std::shar
     );
 }
 
-std::shared_ptr<Cordial::Bytecode::Program> Cordial::BCGenerator::generate(const Cordial::nodo_ptr & node) {
-    auto p = std::make_shared<Bytecode::Program>();
+std::shared_ptr<Cordial::Bytecode::ProgramBuilder> Cordial::BCGenerator::generate(const Cordial::nodo_ptr & node) {
+    auto p = std::make_shared<Bytecode::ProgramBuilder>();
     visit(node, p);
 
     return p;
