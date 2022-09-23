@@ -1,11 +1,7 @@
 hola.
-    porfavor,
-        di "hola, mundo" y baja.
-        repite 4 veces: porfavor,
-            di "algo" y baja.
-        gracias.
-    gracias.
+por favor,
+    di "hola, mundo" y baja.
+    repite 4 entre 2 veces: di "algo ".
+    baja.
+gracias.
 adios.
-
-(Ya puedo leer el archivo 
-    a memoria!)

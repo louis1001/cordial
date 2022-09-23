@@ -17,6 +17,7 @@ enum TokenKind {
     Punto,
     DosPuntos,
     Coma,
+    Y,
     Numero,
     Texto,
     Baja,
@@ -51,6 +52,8 @@ struct Lexer {
     keywords: HashMap<String, TokenKind>
 }
 
+struct TokenizationState(usize, usize);
+
 impl Lexer {
     fn new(content: String) -> Self {
         Self {
@@ -61,7 +64,7 @@ impl Lexer {
             keywords: HashMap::from([
                 ("hola".to_string(), TokenKind::Hola),
                 ("adios".to_string(), TokenKind::Adios),
-                ("porfavor".to_string(), TokenKind::PorFavor),
+                ("por favor".to_string(), TokenKind::PorFavor),
                 ("gracias".to_string(), TokenKind::Gracias),
                 ("muestra".to_string(), TokenKind::Muestra),
                 ("repite".to_string(), TokenKind::Repite),
@@ -78,11 +81,7 @@ impl Lexer {
     }
 
     fn caracter_actual(&self) -> Option<char> {
-        if self.pos > self.content.len() {
-            None
-        } else {
-            self.content.chars().nth(self.pos)
-        }
+        self.mirar_caracter(0)
     }
 
     fn caracter_es(&self, comp: char) -> bool {
@@ -92,9 +91,26 @@ impl Lexer {
         }
     }
 
+    fn mirar_caracter(&self, n: usize) -> Option<char> {
+        if self.pos + n > self.content.len()-1 {
+            None
+        } else {
+            self.content.chars().nth(self.pos + n)
+        }
+    }
+
     fn siguiente(&mut self) {
         self.col += 1;
         self.pos += 1
+    }
+
+    fn store_state(&self) -> TokenizationState {
+        TokenizationState(self.col, self.pos)
+    }
+
+    fn restore_state(&mut self, t: TokenizationState) {
+        self.col = t.0;
+        self.pos = t.1;
     }
 
     fn ignorar_espacios(&mut self) {
@@ -126,9 +142,14 @@ impl Lexer {
         }
     }
 
-    fn identificador(&mut self) -> Result<Token, String> {
+    fn es_inicio_identificador(&self, c: char) -> bool {
+        c.is_alphabetic()
+    }
+
+    fn identificador(&mut self, prefix: &str) -> Result<Token, String> {
         let span = Span(self.line, self.col);
         let mut result = String::new();
+        result.push_str(prefix);
 
         while let Some(c) = self.caracter_actual() {
             if c.is_alphanumeric() {
@@ -138,13 +159,30 @@ impl Lexer {
                 break
             }
         }
+        
+        if self.caracter_es(' ') && self.es_inicio_identificador(self.mirar_caracter(1).unwrap_or('\0')) {
+            let prev_state = self.store_state();
 
+            self.siguiente();
+            let mut compose_prefix = result.clone();
+            
+            compose_prefix.push(' ');
+
+            if let Ok(composed) = self.identificador(&compose_prefix) {
+                return Ok(composed);
+            }
+
+            // En caso de que no se encuentre una compuesta,
+            // regresar al estado anterior
+            self.restore_state(prev_state);
+        }
+        
         if let Some(palabra_clave) = self.keywords.get(&result) {
             Ok(Token{ lexeme: result, kind: palabra_clave.clone(), span: span })
         } else {
             // Por ahora, cualquier identificador que no sea
             // Una palabra clave, es un error
-            todo!("Identificador invalido: {}", result)
+            Err(format!("Identificador invalido: `{}`", result))
         }
     }
 
@@ -214,14 +252,11 @@ impl Lexer {
             } else if c == ',' {
                 self.siguiente();
                 Token{ lexeme: c.to_string(), kind: TokenKind::Coma, span }
-            } else if c == 'y' {
-                self.siguiente();
-                Token{ lexeme: c.to_string(), kind: TokenKind::Y, span }
             } else if c == ':' {
                 self.siguiente();
                 Token { lexeme: ':'.to_string(), kind: TokenKind::DosPuntos, span }
-            } else if c.is_alphabetic() {
-                self.identificador()?
+            } else if self.es_inicio_identificador(c) {
+                self.identificador("")?
             } else if c.is_numeric() {
                 self.numero(c)?
             } else {
