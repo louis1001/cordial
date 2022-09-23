@@ -1,0 +1,47 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'cordial'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=cordial",
+                    "--package=cordial"
+                ],
+                "filter": {
+                    "name": "cordial",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "ejemplos/hola.cord"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'cordial'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=cordial",
+                    "--package=cordial"
+                ],
+                "filter": {
+                    "name": "cordial",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
