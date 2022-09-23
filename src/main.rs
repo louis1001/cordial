@@ -20,7 +20,11 @@ enum TokenKind {
     Numero,
     Texto,
     Baja,
-    Y
+
+    Mas,
+    Menos,
+    Por,
+    Entre
 }
 
 #[derive(Debug, Clone)]
@@ -64,6 +68,11 @@ impl Lexer {
                 ("veces".to_string(), TokenKind::Veces),
                 ("di".to_string(), TokenKind::Di),
                 ("baja".to_string(), TokenKind::Baja),
+                ("mas".into(), TokenKind::Mas),
+                ("menos".into(), TokenKind::Menos),
+                ("por".into(), TokenKind::Por),
+                ("entre".into(), TokenKind::Entre),
+                ("y".into(), TokenKind::Y),
             ])
         }
     }
@@ -236,6 +245,10 @@ enum Ast {
     Repite(Node, Node),
     Texto(String),
     Numero(f64),
+
+    AdditionOp(TokenKind, Node, Node),
+    MultiplicationOp(TokenKind, Node, Node),
+
     NoOp
 }
 
@@ -267,6 +280,17 @@ impl<TokenIter> Parser<TokenIter>
 
     fn match_kind(&mut self, kind: TokenKind) -> Option<Token> {
         self.tokens.next_if(|x| x.kind == kind)
+    }
+
+    fn match_kinds(&mut self, kinds: &[TokenKind]) -> Option<Token> {
+        let mut result = None;
+        for kind in kinds {
+            if let Some(token) = self.tokens.next_if(|x| x.kind == *kind) {
+                result = Some(token);
+            }
+        }
+
+        result
     }
 
     fn parse(&mut self) -> Result<Node, String> {
@@ -328,7 +352,7 @@ impl<TokenIter> Parser<TokenIter>
     fn repite(&mut self) -> Result<Node, String> {
         self.expect(TokenKind::Repite)?;
 
-        let ammount = self.atomo()?;
+        let ammount = self.termino()?;
 
         self.expect(TokenKind::Veces)?;
 
@@ -340,8 +364,26 @@ impl<TokenIter> Parser<TokenIter>
     }
 
     fn termino(&mut self) -> Result <Node, String> {
-        let node = self.atomo()?;
-        
+        let mut node = self.producto()?;
+
+        while let Some(t) = self.match_kinds(&[TokenKind::Mas, TokenKind::Menos]) {
+            let rhs = self.producto()?;
+
+            node = Box::new(Ast::AdditionOp(t.kind, node, rhs));
+        }
+        // Operadores
+
+        Ok(node)
+    }
+
+    fn producto(&mut self) -> Result<Node, String> {
+        let mut node = self.atomo()?;
+
+        while let Some(t) = self.match_kinds(&[TokenKind::Por, TokenKind::Entre]) {
+            let rhs = self.atomo()?;
+
+            node = Box::new(Ast::MultiplicationOp(t.kind, node, rhs));
+        }
         // Operadores
 
         Ok(node)
@@ -451,6 +493,44 @@ impl Runner {
         Ok(Valor::Nada)
     }
 
+    fn addition(&mut self, op: TokenKind, lhs: Node, rhs: Node) -> Result<Valor, String> {
+        let lhs_visited = self.visit(lhs)?;
+        let rhs_visited = self.visit(rhs)?;
+
+        match (lhs_visited, rhs_visited) {
+            (Valor::Numero(a), Valor::Numero(b)) => {
+                match op {
+                    TokenKind::Mas => Ok(Valor::Numero(a + b)),
+                    TokenKind::Menos => Ok(Valor::Numero(a - b)),
+
+                    _ => Err(format!("Operación binaria invalida: {:?}", op))
+                }
+            }
+            _ => {
+                Err(format!("Operación {:?} solo es posible entre números", op))
+            }
+        }
+    }
+
+    fn multiplication(&mut self, op: TokenKind, lhs: Node, rhs: Node) -> Result<Valor, String> {
+        let lhs_visited = self.visit(lhs)?;
+        let rhs_visited = self.visit(rhs)?;
+
+        match (lhs_visited, rhs_visited) {
+            (Valor::Numero(a), Valor::Numero(b)) => {
+                match op {
+                    TokenKind::Por => Ok(Valor::Numero(a * b)),
+                    TokenKind::Entre => Ok(Valor::Numero(a / b)),
+
+                    _ => Err(format!("Operación binaria invalida: {:?}", op))
+                }
+            }
+            _ => {
+                Err(format!("Operación {:?} solo es posible entre números", op))
+            }
+        }
+    }
+
     fn visit(&mut self, node: Node) -> Result<Valor, String> {
         match *node {
             Ast::Programa(body) => {
@@ -478,6 +558,8 @@ impl Runner {
             Ast::Numero(n) => Ok(Valor::Numero(n)),
             Ast::Repite(times, body) => self.repite(times, body),
             Ast::NoOp => Ok(Valor::Nada),
+            Ast::AdditionOp(op, lhs, rhs) => self.addition(op, lhs, rhs),
+            Ast::MultiplicationOp(op, lhs, rhs) => self.multiplication(op, lhs, rhs),
             _ => todo!("{:?}", *node)
         }
     }
