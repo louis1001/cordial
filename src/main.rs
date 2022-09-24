@@ -20,6 +20,8 @@ enum TokenKind {
     Y,
     Numero,
     Texto,
+    Cierto,
+    Falso,
     Baja,
 
     Mas,
@@ -76,6 +78,8 @@ impl Lexer {
                 ("por".into(), TokenKind::Por),
                 ("entre".into(), TokenKind::Entre),
                 ("y".into(), TokenKind::Y),
+                ("cierto".into(), TokenKind::Cierto),
+                ("falso".into(), TokenKind::Falso),
             ])
         }
     }
@@ -280,6 +284,7 @@ enum Ast {
     Repite(Node, Node),
     Texto(String),
     Numero(f64),
+    Verdad(bool),
 
     AdditionOp(TokenKind, Node, Node),
     MultiplicationOp(TokenKind, Node, Node),
@@ -440,6 +445,8 @@ impl<TokenIter> Parser<TokenIter>
 
                     Ast::Numero(val)
                 },
+                TokenKind::Cierto => Ast::Verdad(true),
+                TokenKind::Falso => Ast::Verdad(false),
                 _ => Ast::NoOp
             }
             None => Ast::NoOp
@@ -483,6 +490,7 @@ impl<TokenIter> Parser<TokenIter>
 enum Valor {
     Texto(String),
     Numero(f64),
+    Verdad(bool),
     Nada
 }
 
@@ -591,6 +599,9 @@ impl Runner {
             }
             Ast::Texto(t) => Ok(Valor::Texto(t)),
             Ast::Numero(n) => Ok(Valor::Numero(n)),
+
+            Ast::Verdad(v) => Ok(Valor::Verdad(v)),
+
             Ast::Repite(times, body) => self.repite(times, body),
             Ast::NoOp => Ok(Valor::Nada),
             Ast::AdditionOp(op, lhs, rhs) => self.addition(op, lhs, rhs),
