@@ -2,6 +2,11 @@ hola.
 por favor,
     di "hola, mundo" y baja.
     repite 4 entre 2 veces: di "algo ".
+
+    mientras cierto: por favor,
+        di "ciclo while" y baja.
+    gracias.
+    
     baja.
 gracias.
 adios.

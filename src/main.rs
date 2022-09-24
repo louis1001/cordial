@@ -13,6 +13,7 @@ enum TokenKind {
     Muestra,
     Di,
     Repite,
+    Mientras,
     Veces,
     Punto,
     DosPuntos,
@@ -71,6 +72,7 @@ impl Lexer {
                 ("muestra".to_string(), TokenKind::Muestra),
                 ("repite".to_string(), TokenKind::Repite),
                 ("veces".to_string(), TokenKind::Veces),
+                ("mientras".into(), TokenKind::Mientras),
                 ("di".to_string(), TokenKind::Di),
                 ("baja".to_string(), TokenKind::Baja),
                 ("mas".into(), TokenKind::Mas),
@@ -282,6 +284,7 @@ enum Ast {
     Bloque(Vec<Node>),
     Di(Node),
     Repite(Node, Node),
+    Mientras(Node, Node),
     Texto(String),
     Numero(f64),
     Verdad(bool),
@@ -403,6 +406,18 @@ impl<TokenIter> Parser<TokenIter>
         Ok(Box::new(Ast::Repite(ammount, body)))
     }
 
+    fn mientras(&mut self) -> Result<Node, String> {
+        self.expect(TokenKind::Mientras)?;
+
+        let condition = self.termino()?;
+
+        self.expect(TokenKind::DosPuntos)?;
+
+        let body = self.sentencia()?;
+
+        Ok(Box::new(Ast::Mientras(condition, body)))
+    }
+
     fn termino(&mut self) -> Result <Node, String> {
         let mut node = self.producto()?;
 
@@ -476,6 +491,10 @@ impl<TokenIter> Parser<TokenIter>
                 has_puntuation = false;
                 self.repite()
             }
+            TokenKind::Mientras => {
+                has_puntuation = false;
+                self.mientras()
+            }
             _ => {
                 Err("Token invalido.".to_string())
             }
@@ -531,6 +550,28 @@ impl Runner {
 
         for _ in 0..int_count {
             self.visit(body.clone())?;
+        }
+
+        Ok(Valor::Nada)
+    }
+
+    fn mientras(&mut self, cond: Node, body: Node) -> Result<Valor, String> {
+        let cond_value = self.visit(cond.clone())?;
+        
+        let mut condition = if let Valor::Verdad(valor) = cond_value {
+            valor
+        } else {
+            return Err("La condición en una sentencia `Mientras` debe ser una verdad.".into());
+        };
+
+        while condition {
+            self.visit(body.clone())?;
+
+            let cond_value = self.visit(cond.clone())?;
+            condition = if let Valor::Verdad(valor) = cond_value { valor }
+            else {
+                return Err("La condición en una sentencia `Mientras` debe ser una verdad.".into());
+            }
         }
 
         Ok(Valor::Nada)
@@ -603,6 +644,8 @@ impl Runner {
             Ast::Verdad(v) => Ok(Valor::Verdad(v)),
 
             Ast::Repite(times, body) => self.repite(times, body),
+            Ast::Mientras(cond, body) => self.mientras(cond, body),
+            
             Ast::NoOp => Ok(Valor::Nada),
             Ast::AdditionOp(op, lhs, rhs) => self.addition(op, lhs, rhs),
             Ast::MultiplicationOp(op, lhs, rhs) => self.multiplication(op, lhs, rhs),
