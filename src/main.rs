@@ -1,9 +1,10 @@
 use std::env;
 use std::fs;
 
-mod execution;
+mod preprocessing;
 mod lexer;
 mod parser;
+mod execution;
 
 fn main() -> Result<(), String>{
     let args: Vec<_> = env::args().collect();

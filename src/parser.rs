@@ -75,7 +75,12 @@ impl<TokenIter> Parser<TokenIter>
             if let Some(t) = self.tokens.peek() {
                 Err(format!("Se esperaba puntuación en {}, pero se encontró `{:?}`", t.span, t.kind).to_string())
             } else {
-                Err(format!("Se esperaba puntuación en {}, pero no se encontró nada.", self.tokens.peek().unwrap().span).to_string())
+                if let Some(next_token) = self.tokens.peek() {
+                    Err(format!("Se esperaba puntuación en {}, pero no se encontró nada.", next_token.span.to_string()))
+                } else {
+                    Err(format!("Se esperaba puntuación, pero no se encontró nada."))
+                }
+                
             }
         }
     }
@@ -220,7 +225,7 @@ impl<TokenIter> Parser<TokenIter>
                 self.mientras()
             }
             _ => {
-                Err("Token invalido.".to_string())
+                Err(format!("Token invalido: {:?}.", token.kind))
             }
         }?;
 

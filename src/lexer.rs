@@ -1,6 +1,8 @@
 use std::fmt::{Display};
 use std::collections::HashMap;
 
+use crate::preprocessing::Preprocessor;
+
 #[derive(Debug, Clone)]
 pub struct Span(usize, usize);
 
@@ -16,24 +18,36 @@ pub struct Token {
     pub kind: TokenKind,
     pub span: Span
 }
+
+#[derive(Debug, Clone)]
+pub struct Macro {
+    pub name: String,
+    pub tokens: Vec<Token>
+}
+
 // Lexer - Analizador 'lexicográfico'?
 pub struct Lexer {
     content: String,
     pos: usize,
     line: usize,
     col: usize,
+    is_fragment: bool,
+    macros: HashMap<String, Macro>,
     keywords: HashMap<String, TokenKind>
 }
 
 struct TokenizationState(usize, usize);
 
 impl Lexer {
-    pub fn new(content: String) -> Self {
-        Self {
-            content,
-            pos: 0,
-            line: 1,
+    pub fn new(content: String, is_fragment: bool) -> Result<Self, String> {
+        let preprocessed = Preprocessor::preprocess(&content, is_fragment)?;
+        Ok(Self {
+            content: content,
+            pos: preprocessed.1, // Posición al inicio de `hola`
+            line: 1, // TODO: Calcular linea y columna de la posición inicial
             col: 0,
+            is_fragment,
+            macros: preprocessed.0,
             keywords: HashMap::from([
                 ("hola".to_string(), TokenKind::Hola),
                 ("adios".to_string(), TokenKind::Adios),
@@ -53,7 +67,7 @@ impl Lexer {
                 ("cierto".into(), TokenKind::Cierto),
                 ("falso".into(), TokenKind::Falso),
             ])
-        }
+        })
     }
 
     fn caracter_actual(&self) -> Option<char> {
@@ -241,7 +255,12 @@ impl Lexer {
                 )
             };
 
-            tokens.push(token);
+            if !self.is_fragment && token.kind == TokenKind::Adios {
+                tokens.push(token);
+                break
+            } else {
+                tokens.push(token);
+            }
         }
 
         Ok(tokens)

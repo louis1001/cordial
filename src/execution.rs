@@ -16,7 +16,7 @@ pub struct Runner {
 impl Runner {
     pub fn run(&mut self, text: String) -> Result<(), String> {
         // Generar los tokens (seccionar el código)
-        let mut lexer = lexer::Lexer::new(text);
+        let mut lexer = lexer::Lexer::new(text, false)?;
 
         let tokens = lexer.generar_tokens()?;
 

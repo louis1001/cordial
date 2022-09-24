@@ -1,3 +1,12 @@
+*sin parar {
+    mientras cierto
+}
+*segunda { di "hola" }
+
+/hola.
+    por favor, di "No se ejecuta si el 'hola' está obstruído" y baja, gracias.
+adios.
+
 hola.
 por favor,
     di "hola, mundo" y baja.
