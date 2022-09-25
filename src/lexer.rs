@@ -136,7 +136,7 @@ impl Lexer {
         c.is_alphabetic()
     }
 
-    fn identificador(&mut self, prefix: &str) -> Result<Token, String> {
+    fn identificador(&mut self, prefix: &str) -> Result<Vec<Token>, String> {
         let span = Span(self.line, self.col);
         let mut result = String::new();
         result.push_str(prefix);
@@ -167,8 +167,10 @@ impl Lexer {
             self.restore_state(prev_state);
         }
         
-        if let Some(palabra_clave) = self.keywords.get(&result) {
-            Ok(Token{ lexeme: result, kind: palabra_clave.clone(), span: span })
+        if let Some(existing_macro) = self.macros.get(&result) {
+            Ok(existing_macro.tokens.clone())
+        } else if let Some(palabra_clave) = self.keywords.get(&result) {
+            Ok(vec![Token{ lexeme: result, kind: palabra_clave.clone(), span: span }])
         } else {
             // Por ahora, cualquier identificador que no sea
             // Una palabra clave, es un error
@@ -233,6 +235,13 @@ impl Lexer {
             if c.is_none() { break }
             
             let c = c.unwrap();
+
+            if self.es_inicio_identificador(c) {
+                let mut resulting_tokens: Vec<_> = self.identificador("")?.into();
+                tokens.append(&mut resulting_tokens);
+                continue;
+            }
+
             let token =  if c == '"' {
                 // Procesar string
                 self.texto()?
@@ -245,8 +254,6 @@ impl Lexer {
             } else if c == ':' {
                 self.siguiente();
                 Token { lexeme: ':'.to_string(), kind: TokenKind::DosPuntos, span }
-            } else if self.es_inicio_identificador(c) {
-                self.identificador("")?
             } else if c.is_numeric() {
                 self.numero(c)?
             } else {
