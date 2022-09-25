@@ -178,6 +178,23 @@ impl Lexer {
         }
     }
 
+    fn handle_escaped(&mut self) -> Result<char, String> {
+        let c = self.caracter_actual();
+        if c.is_none() {
+            return Err("Caracter de escape invalido. El texto terminó antes de recibir código a escapar.".to_string());
+        }
+
+        self.siguiente();
+
+        match c.unwrap() {
+            'n' => Ok('\n'),
+            't' => Ok('\t'),
+            _ => {
+                Err(format!("Character de escape `\\!{}` invalido.", c.unwrap()))
+            }
+        }
+    }
+
     fn texto(&mut self) -> Result<Token, String> {
         let span = Span(self.line, self.col);
         let mut result = String::new();
@@ -185,6 +202,19 @@ impl Lexer {
         self.siguiente();
         while let Some(c) = self.caracter_actual() {
             if c == '"' { break; }
+            if c == '\\' {
+                self.siguiente();
+                if self.caracter_es('!') {
+                    // Escape character
+                    self.siguiente();
+                    let ch = self.handle_escaped()?;
+                    result.push(ch);
+                } else {
+                    result.push('\\');
+                }
+
+                continue;
+            }
             result.push(c);
             self.siguiente();
         }

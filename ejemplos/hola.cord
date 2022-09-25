@@ -1,7 +1,6 @@
 *sin parar {
     mientras cierto
 }
-*segunda { di "hola" }
 
 /hola.
     por favor, di "No se ejecuta si el 'hola' está obstruído" y baja, gracias.
@@ -9,12 +8,8 @@ adios.
 
 hola.
 por favor,
-    di "hola, mundo" y baja.
+    di "hola, mundo" y di "\!n".
     repite 4 entre 2 veces: di "algo ".
-
-    sin parar: por favor,
-        di "ciclo while" y baja.
-    gracias.
     
     baja.
 gracias.

@@ -72,7 +72,6 @@ impl Preprocessor {
     fn find_program_bounds(content: &str) -> Result<(usize, usize), String> {
         lazy_static::lazy_static! {
             static ref HOLARE: Regex = Regex::new(r"(^hola)|(\n\s*hola)").unwrap();
-            static ref ADIOSRE: Regex = Regex::new(r"adios").unwrap();
         }
 
         let holas: Vec<_> = HOLARE.find_iter(content).collect();
