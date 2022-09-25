@@ -13,5 +13,5 @@ hola. por favor,
     di "hola, mundo" y baja.
     repite 4 entre 2 veces: di "algo ".
     
-    baja.
+    baja;
 gracias, adios.

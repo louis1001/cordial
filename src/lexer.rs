@@ -280,6 +280,9 @@ impl Lexer {
             } else if c == ',' {
                 self.siguiente();
                 Token{ lexeme: c.to_string(), kind: TokenKind::Coma, span }
+            } else if c == ';' {
+                self.siguiente();
+                Token{ lexeme: c.to_string(), kind: TokenKind::PuntoYComa, span }
             } else if c == ':' {
                 self.siguiente();
                 Token { lexeme: ':'.to_string(), kind: TokenKind::DosPuntos, span }
@@ -317,6 +320,7 @@ pub enum TokenKind {
     Punto,
     DosPuntos,
     Coma,
+    PuntoYComa,
     Y,
     Numero,
     Texto,

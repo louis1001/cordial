@@ -69,6 +69,8 @@ impl<TokenIter> Parser<TokenIter>
             Ok(())
         } else if self.match_kind(TokenKind::Coma).is_some() {
             Ok(())
+        } else if self.match_kind(TokenKind::PuntoYComa).is_some() {
+            Ok(())
         } else if self.match_kind(TokenKind::Y).is_some() {
             Ok(())
         } else {
