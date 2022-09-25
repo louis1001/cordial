@@ -35,8 +35,6 @@ impl Preprocessor {
             if let Some(name_length) = substring_from(content, macro_start).find("{") {
                 let name = substring(content, macro_start+1, name_length-1).trim();
 
-                println!("Macro: `{}`", name);
-
                 let name_end = macro_start + name_length;
 
                 if let Some(body_length) = content.split_at(name_end).1.find("}") {

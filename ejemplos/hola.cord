@@ -2,15 +2,16 @@
     mientras cierto
 }
 
+(Definir `baja` como una macro)
+*baja { di "\!n" }
+
 /hola.
     por favor, di "No se ejecuta si el 'hola' está obstruído" y baja, gracias.
 adios.
 
-hola.
-por favor,
-    di "hola, mundo" y di "\!n".
+hola. por favor,
+    di "hola, mundo" y baja.
     repite 4 entre 2 veces: di "algo ".
     
     baja.
-gracias.
-adios.
+gracias, adios.

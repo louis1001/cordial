@@ -58,7 +58,6 @@ impl Lexer {
                 ("veces".to_string(), TokenKind::Veces),
                 ("mientras".into(), TokenKind::Mientras),
                 ("di".to_string(), TokenKind::Di),
-                ("baja".to_string(), TokenKind::Baja),
                 ("mas".into(), TokenKind::Mas),
                 ("menos".into(), TokenKind::Menos),
                 ("por".into(), TokenKind::Por),
