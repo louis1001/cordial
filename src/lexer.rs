@@ -326,7 +326,6 @@ pub enum TokenKind {
     Texto,
     Cierto,
     Falso,
-    Baja,
 
     Mas,
     Menos,

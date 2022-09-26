@@ -214,10 +214,6 @@ impl<TokenIter> Parser<TokenIter>
             TokenKind::Di => {
                 self.di()
             }
-            TokenKind::Baja => {
-                self.tokens.next();
-                Ok(Box::new(Ast::Di(Box::new(Ast::Texto("\n".to_string())))))
-            }
             TokenKind::Repite => {
                 has_puntuation = false;
                 self.repite()
