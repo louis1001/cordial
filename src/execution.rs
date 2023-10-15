@@ -1,7 +1,10 @@
+use std::collections::HashMap;
+
 use crate::lexer;
 use crate::parser;
 use parser::{Node, Ast};
 
+#[derive(Clone)]
 enum Valor {
     Texto(String),
     Numero(f64),
@@ -9,8 +12,42 @@ enum Valor {
     Nada
 }
 
-pub struct Runner {
+struct Simbolo {
+    name: String,
+    value_index: Option<u32>
+}
 
+// TODO: Normalize naming language conventions
+struct Scope {
+    name: String,
+    symbols: HashMap<String, Simbolo>,
+    values: HashMap<u32, Valor>
+}
+
+impl Scope {
+    fn max_value_index(&self) -> u32 {
+        *self.values.keys().max().unwrap_or(&0)
+    }
+}
+
+impl Scope {
+    fn new(name: &str) -> Self {
+        Scope { name: name.to_string(), symbols: HashMap::new(), values: HashMap::new() }
+    }
+}
+
+pub struct Runner {
+    scope_stack: Vec<Scope>
+}
+
+impl Runner {
+    pub fn new() -> Self {
+        Runner { scope_stack: vec![] }
+    }
+
+    fn current_scope(&mut self) -> Option<&mut Scope> {
+        self.scope_stack.last_mut()
+    }
 }
 
 impl Runner {
@@ -24,7 +61,12 @@ impl Runner {
 
         let ast = parser.parse()?;
 
+        let top_scope = Scope { name: "global".to_string(), symbols: HashMap::new(), values: HashMap::new() };
+        self.scope_stack.push(top_scope);
+
         let _ = self.visit(ast)?;
+
+        self.scope_stack.pop();
 
         Ok(())
     }
@@ -111,6 +153,34 @@ impl Runner {
         }
     }
 
+    fn nombre(&mut self, nombre: String) -> Result<Valor, String> {
+        let scope = self.current_scope().ok_or("No se encontró un entorno válido.")?;
+
+        let value_index = scope.symbols
+            .get(&nombre)
+                .ok_or(format!("El nombre {nombre} no está definido en el entorno."))?
+            .value_index
+                .ok_or(format!("El nombre {nombre} no ha sido inicializado."))?;
+
+        let value = scope.values.get(&value_index)
+            .expect(&format!("El `value_index` del simbolo {nombre} apunta a un valor válido."));
+
+        Ok(value.clone())
+    }
+
+    fn asignacion(&mut self, value: Node, name: String) -> Result<Valor, String> {
+        let value = self.visit(value)?;
+        let scope = self.current_scope().ok_or("No se encontró un entorno válido.")?;
+
+        let value_index: u32 = scope.max_value_index() + 1;
+        scope.values.insert(value_index, value);
+
+        let symbol = Simbolo { name, value_index: Some(value_index) };
+        scope.symbols.insert(symbol.name.clone(), symbol);
+
+        Ok(Valor::Nada)
+    }
+
     fn visit(&mut self, node: Node) -> Result<Valor, String> {
         match *node {
             Ast::Programa(body) => {
@@ -141,6 +211,9 @@ impl Runner {
 
             Ast::Repite(times, body) => self.repite(times, body),
             Ast::Mientras(cond, body) => self.mientras(cond, body),
+
+            Ast::Asignacion(value, name) => self.asignacion(value, name),
+            Ast::Nombre(nombre) => self.nombre(nombre),
             
             Ast::NoOp => Ok(Valor::Nada),
             Ast::AdditionOp(op, lhs, rhs) => self.addition(op, lhs, rhs),

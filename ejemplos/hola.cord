@@ -11,7 +11,11 @@ adios.
 
 hola. por favor,
     di "hola, mundo" y baja.
-    repite 4 entre 2 veces: di "algo ".
-    
+    pon "hola" en saludo.
+    pon 40 en cantidad;
+
+    di saludo, di ", usuario" y baja.
+
+    por favor, repite cantidad veces: di "algo ". gracias.
     baja;
 gracias, adios.

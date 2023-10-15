@@ -20,7 +20,7 @@ fn main() -> Result<(), String>{
         fs::read_to_string(filename)
         .expect("No se pudo leer el archivo");
 
-    let mut runner = execution::Runner{};
+    let mut runner = execution::Runner::new();
     runner.run(contenido)?;
 
     Ok(())

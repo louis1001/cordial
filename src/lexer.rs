@@ -63,6 +63,8 @@ impl Lexer {
                 ("por".into(), TokenKind::Por),
                 ("entre".into(), TokenKind::Entre),
                 ("y".into(), TokenKind::Y),
+                ("pon".into(), TokenKind::Pon),
+                ("en".into(), TokenKind::En),
                 ("cierto".into(), TokenKind::Cierto),
                 ("falso".into(), TokenKind::Falso),
             ])
@@ -326,6 +328,11 @@ pub enum TokenKind {
     Texto,
     Cierto,
     Falso,
+
+    Pon,
+    En,
+
+    Nombre,
 
     Mas,
     Menos,

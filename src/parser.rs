@@ -13,6 +13,9 @@ pub enum Ast {
     Numero(f64),
     Verdad(bool),
 
+    Nombre(String),
+    Asignacion(Node, String),
+
     AdditionOp(TokenKind, Node, Node),
     MultiplicationOp(TokenKind, Node, Node),
 
@@ -193,12 +196,35 @@ impl<TokenIter> Parser<TokenIter>
                 },
                 TokenKind::Cierto => Ast::Verdad(true),
                 TokenKind::Falso => Ast::Verdad(false),
+                TokenKind::Nombre => {
+                    let val: String = match t.lexeme.parse() {
+                        Ok(v) => v,
+                        Err(_) => {
+                            return Err(format!("Valor `{}` no es un número valido.", t.lexeme));
+                        }
+                    };
+
+                    Ast::Nombre(val)
+                }
                 _ => Ast::NoOp
             }
             None => Ast::NoOp
         };
 
         Ok(Box::new(node))
+    }
+
+    fn pon(&mut self) -> Result<Node, String> {
+        self.expect(TokenKind::Pon)?;
+
+        let value = self.termino()?;
+
+        self.expect(TokenKind::En)?;
+
+        let name = self.tokens.peek().map(|t| t.clone().lexeme);
+        self.expect(TokenKind::Nombre)?;
+
+        Ok(Box::new(Ast::Asignacion(value, name.unwrap())))
     }
     
     fn sentencia(&mut self) -> Result<Node, String> {
@@ -221,6 +247,9 @@ impl<TokenIter> Parser<TokenIter>
             TokenKind::Mientras => {
                 has_puntuation = false;
                 self.mientras()
+            }
+            TokenKind::Pon => {
+                self.pon()
             }
             _ => {
                 Err(format!("Token invalido: {:?}.", token.kind))
